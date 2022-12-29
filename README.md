@@ -1,34 +1,36 @@
-![Miyou Banner](https://user-images.githubusercontent.com/61660793/202897934-8656a581-a55a-47d7-9658-ee9e4f2295dc.png)
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-# Welcome to Miyou Github Repository
+## Getting Started
 
-![Miyou Mockup Photo Here](https://user-images.githubusercontent.com/61660793/202531185-92331444-9216-4dd2-8616-2772a9d65f1d.jpg)
+First, run the development server:
 
-## Miyou is an online anime streaming site built using React.js. [Visit Here](https://www.miyou.me/).
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-### `npm i` (Install the dependencies)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### `npm start` (Run locally)
+You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-### Set up your .env file
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-First add a .env file in your root directory. Then add <br />
-`REACT_APP_BACKEND_URL='https://miyou-api.cyclic.app/' REACT_APP_BASE_URL='https://graphql.anilist.co'`
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## Todo
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-### Changing the search page
+## Learn More
 
-Add the ability to search genres or search from multiple genres. And sort by Trending or Popularity or User Preference. Something like this.
-![Search UI Design](https://user-images.githubusercontent.com/61660793/204035337-6258d5b1-e6ae-40b4-bfea-b216d0bfe321.png)
-If anybody wants to implement just the design part in CSS, you are more than welcome to contribute. It would be a big help.
+To learn more about Next.js, take a look at the following resources:
 
-## Contributing
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-Contributions are always welcome.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-You can contribute to this project by forking the project, adding or making changes, and submitting a pull request.
+## Deploy on Vercel
 
-## Disclaimer
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-I'm privating the backend repo because a lot of people are copying the project without giving any credits and pretending to be the real one. You can only test this on your localhost and cannot host it. It will give you CORS error.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
