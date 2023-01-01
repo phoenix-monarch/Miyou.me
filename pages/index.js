@@ -3,47 +3,25 @@ import styled from "styled-components";
 import Link from "next/link"
 import Carousel from "../components/Home/Carousel";
 import axios from "axios";
+import useSWR from "swr"
 import AnimeCards from "../components/Home/AnimeCards";
 import HomeSkeleton from "../components/skeletons/CarouselSkeleton";
 import WatchingEpisodes from "../components/Home/WatchingEpisodes";
 import { TrendingAnimeQuery } from "../hooks/searchQueryStrings";
-
-import {
-  useWindowSize,
-} from '@react-hook/window-size/throttled'
+import {request} from 'graphql-request'
+import useWindowSize from "../hooks/useWindowSize";
 
 function Home() {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [width, height] = useWindowSize()
-  useEffect(() => {
-    getImages();
-  }, []);
-
-  async function getImages() {
-    window.scrollTo(0, 0);
-    let result = await axios({
-      url: "https://graphql.anilist.co/",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      data: {
-        query: TrendingAnimeQuery,
-        variables: {
-          page: 1,
-          perPage: 15,
-        },
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
-    console.log(result)
-    setImages(result.data.data.Page.media);
-    setLoading(false);
-    document.title = "Miyou - Watch Anime Free Online With English Sub and Dub";
-  }
+  const {width, height} = useWindowSize()
+  const fetcher = query =>
+    request(process.env.NEXT_PUBLIC_BASE_URL, query,{page: 1,
+      perPage: 15})
+  
+    
+  const { data  , error   } = useSWR( 
+    TrendingAnimeQuery,
+    fetcher
+  )
 
   function checkSize() {
     if (typeof window !== 'undefined') {
@@ -56,15 +34,17 @@ function Home() {
     }
     return true;
   }
-  }
+  }  if(error) return <>`Failed To Load. Status Code : ${error.response.status}` {console.log(error.response.status)}</>
+
   return (
     <div>
       <HomeDiv>
         <HomeHeading>
           <span>Recommended</span> to you
         </HomeHeading>
-        {loading && <HomeSkeleton />}
-        {!loading && <Carousel images={images} />}
+
+        {!data  && <HomeSkeleton />}
+        {data  && <Carousel images={data.Page.media} />}
         {
            typeof window !== "undefined" ? localStorage.getItem("Watching") && checkSize() && (
             <div>
@@ -78,7 +58,7 @@ function Home() {
           ) : null
         }
     
-        {/* <div>
+        <div>
           <HeadingWrapper>
             <Heading>
               <span>Trending</span> Now
@@ -86,8 +66,8 @@ function Home() {
             <Links href="/trending/1">View All</Links>
           </HeadingWrapper>
           <AnimeCards count={width <= 600 ? 7 : 15} criteria="airing" />
-        </div> */}
-        {/* <div>
+        </div>
+        <div>
           <HeadingWrapper>
             <Heading>
               <span>All Time</span> Popular
@@ -122,7 +102,7 @@ function Home() {
             <Links href="/movies">View All</Links>
           </HeadingWrapper>
           <AnimeCards count={width <= 600 ? 7 : 15} criteria="movie" />
-        </div> */}
+        </div>
       </HomeDiv>
     </div>
   );

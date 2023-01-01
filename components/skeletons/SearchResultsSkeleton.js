@@ -1,12 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
-import {
-  useWindowSize,
-} from '@react-hook/window-size/throttled'
+import useWindowSize from "../../hooks/useWindowSize"
 
 function SearchResultsSkeleton({ name }) {
-   const [height, width ] = useWindowSize();
+   const {height, width} = useWindowSize();
 
   return (
     <Parent>
@@ -15,7 +13,7 @@ function SearchResultsSkeleton({ name }) {
       </Heading>
       <CardWrapper>
         {[...Array(40)].map((x, i) => (
-          <div>
+          <div key={i}>
             <Skeleton
               width={width <= 600 ? "110px" : "160px"}
               height={width <= 600 ? "170px" : "235px"}

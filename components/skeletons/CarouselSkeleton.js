@@ -1,12 +1,10 @@
 import React from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import {
-  useWindowSize,
-} from '@react-hook/window-size/throttled'
+import useWindowSize from "../../hooks/useWindowSize";
 
 function CarouselSkeleton() {
-   const [height, width ] = useWindowSize();
+  const {height, width} = useWindowSize();
 
   return (
     <div

@@ -12,11 +12,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import {
-  useWindowSize,
-} from '@react-hook/window-size/throttled'
+import useWindowSize from "../../hooks/useWindowSize";
 function Carousel({ images }) {
-  const [height, width   ] = useWindowSize();
+  const {height, width   } = useWindowSize();
   
   
   return (

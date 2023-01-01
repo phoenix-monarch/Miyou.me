@@ -1,12 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
-import {
-  useWindowSize,
-} from '@react-hook/window-size/throttled'
+import useWindowSize from "../../hooks/useWindowSize";
 
 function AnimeDetailsSkeleton() {
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowSize();
 
   return (
     <Content>

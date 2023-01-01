@@ -2,15 +2,13 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper";
 import Skeleton from "react-loading-skeleton";
-import {
-  useWindowSize,
-} from '@react-hook/window-size/throttled'
+import useWindowSize from "../../hooks/useWindowSize";
 
 import "swiper/css";
 import "swiper/css/scrollbar";
 
 function AnimeCardsSkeleton() {
-  const [ height, width ] = useWindowSize();
+  const { height, width } = useWindowSize();
 
   return (
     <div

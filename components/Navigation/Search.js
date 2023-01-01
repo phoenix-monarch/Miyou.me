@@ -5,15 +5,12 @@ import styled from "styled-components";
 import { FiSearch } from "react-icons/fi";
 import { CgClose } from "react-icons/cg";
 import { IconContext } from "react-icons";
-import {
-  useWindowSize,
-
-} from '@react-hook/window-size'
+import useWindowSize from "../../hooks/useWindowSize";
 
 function Search({ isActive, setIsActive }) {
   const router = useRouter()
   const [title, setTitle] = useState("");
-  const [ width, height ] = useWindowSize();
+  const { width, height } = useWindowSize();
 
   function searchEnter() {
     if (title !== "") {

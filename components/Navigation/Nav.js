@@ -3,24 +3,22 @@ import Link from "next/link"
 import styled from "styled-components";
 import { FiSearch } from "react-icons/fi";
 import { IconContext } from "react-icons";
+import useWindowSize from "../../hooks/useWindowSize"
 import Search from "./Search";
-import {
-  useWindowSize,
-
-} from '@react-hook/window-size'
-
+import Logo from "../../assets/logo.svg"
+import Image from "next/image";
 function Nav() {
   const [isActive, setIsActive] = useState(false);
-  const [height, width   ] = useWindowSize();
+  // const [height, width   ] = useWindowSize();
+  const {height,width} = useWindowSize()
+  
 
-  
-  
 
   return (
     <div>
       <NavBar>
         <Link href="/">
-          <img src="./assets/logo.svg" alt="Logo Here" />
+          <Image src={Logo} alt="Logo Here" />
         </Link>
         <div className="nav-links">
           <Links href="/trending/1">Trending</Links>
@@ -28,7 +26,8 @@ function Nav() {
           <Links href="/favourites/1">Favourites</Links>
           <Links href="/movies">Top Movies</Links>
         </div>
-        {width <= 600 && (
+      
+       {width <= 600 && (
           <IconContext.Provider
             value={{
               size: "1.5rem",
@@ -41,10 +40,11 @@ function Nav() {
           >
             <Button onClick={(e) => setIsActive(!isActive)}>
               <FiSearch />
+              "hey"
             </Button>
-          </IconContext.Provider>
-        )}
-        {width > 600 && (
+          // </IconContext.Provider>
+        )  } 
+         { width > 600 && (
           <IconContext.Provider
             value={{
               size: "1rem",
@@ -56,11 +56,12 @@ function Nav() {
             }}
           >
             <Button onClick={(e) => setIsActive(!isActive)}>
-              <FiSearch />
+              <FiSearch /> 
               Search
             </Button>
           </IconContext.Provider>
-        )}
+        ) } 
+       
       </NavBar>
       {isActive && <Search isActive={isActive} setIsActive={setIsActive} />}
       {isActive && <Shadow></Shadow>}
