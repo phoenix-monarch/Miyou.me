@@ -48,7 +48,7 @@ function AnimeCardsSkeleton() {
         className="mySwiper"
       >
         {[...Array(8)].map((x, i) => (
-          <SwiperSlide>
+          <SwiperSlide key={i}>
             <Skeleton
               width={
                 width <= 600 ? (width <= 400 ? "100px" : "120px") : "160px"

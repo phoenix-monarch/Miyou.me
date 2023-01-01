@@ -40,9 +40,9 @@ function Nav() {
           >
             <Button onClick={(e) => setIsActive(!isActive)}>
               <FiSearch />
-              "hey"
+             Search
             </Button>
-          // </IconContext.Provider>
+          </IconContext.Provider>
         )  } 
          { width > 600 && (
           <IconContext.Provider

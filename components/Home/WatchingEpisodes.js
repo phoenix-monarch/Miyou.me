@@ -5,8 +5,8 @@ import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper";
 import AnimeCardsSkeleton from "../skeletons/AnimeCardsSkeleton";
-// import { IoClose } from "react-icons/io5";
-// import { IconContext } from "react-icons";
+import { IoClose } from "react-icons/io5";
+import { IconContext } from "react-icons";
 import { searchWatchedId } from "../../hooks/searchQueryStrings";
 
 import "swiper/css";
@@ -109,7 +109,7 @@ function WatchingEpisodes() {
           className="mySwiper"
         >
           {data.map((item, i) => (
-            <SwiperSlide>
+            <SwiperSlide key={i}>
               <Wrapper>
                 <IconContext.Provider
                   value={{

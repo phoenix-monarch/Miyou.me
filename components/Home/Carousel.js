@@ -34,7 +34,7 @@ function Carousel({ images }) {
         {images.map(
           (item, index) =>
             item.bannerImage !== null && (
-              <SwiperSlide>
+              <SwiperSlide key={index}>
                 <Container>
                   {width <= 600 && (
                     <img

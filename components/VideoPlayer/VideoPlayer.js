@@ -1,40 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
-import { BsSkipEnd } from "react-icons/bs";
 import { MdPlayDisabled, MdPlayArrow } from "react-icons/md";
 import { IconContext } from "react-icons";
 import styled from "styled-components";
-import {
-  useWindowSize,
-} from '@react-hook/window-size/throttled'
-import { useNavigate, useParams } from "react-router-dom";
 import Hls from "hls.js";
 import plyr from "plyr";
 import "plyr/dist/plyr.css";
 import toast from "react-hot-toast";
-
+import { useRouter } from "next/router";
+import useWindowSize from "../../hooks/useWindowSize";
 function VideoPlayer({
   sources,
   internalPlayer,
   setInternalPlayer,
   title,
   type,
-  banner,
   totalEpisodes,
   currentEpisode,
 }) {
-  const { width } = useWindowDimensions();
-  const navigate = useNavigate();
-  const slug = useParams().slug;
-  const episode = useParams().episode;
-
+  const { width } = useWindowSize();
+  const router = useRouter();
+  // const slug = useParams().slug;
+  // const episode = useParams().episode;
+  const {epId,epNum} = router.query
   let src = sources;
   const [player, setPlayer] = useState(null);
   const [autoPlay, setAutoplay] = useState(false);
 
-  function skipIntro() {
-    player.forward(85);
-  }
 
   function updateAutoplay(data) {
     toast.success(`Autoplay ${data ? "Enabled" : "Disabled"}`, {
@@ -89,7 +81,6 @@ function VideoPlayer({
       player.source = {
         type: "video",
         title: "Example title",
-        poster: banner,
         sources: [
           {
             src: src,
@@ -125,12 +116,7 @@ function VideoPlayer({
         let player = new plyr(video, defaultOptions);
         setPlayer(new plyr(video, defaultOptions));
         let plyer;
-        var button = document.createElement("button");
-        button.classList.add("skip-button");
-        button.innerHTML = "Skip Intro";
-        button.addEventListener("click", function () {
-          player.forward(85);
-        });
+      
         player.on("ready", () => {
           plyer = document.querySelector(".plyr__controls");
           document
@@ -169,7 +155,6 @@ function VideoPlayer({
         });
 
         player.on("exitfullscreen", (event) => {
-          document.querySelector(".skip-button").remove();
           window.screen.orientation.lock("portrait");
         });
 
@@ -183,14 +168,12 @@ function VideoPlayer({
 
         player.on("ended", function () {
           localStorage.removeItem(title);
-          console.log(currentEpisode + " _ " + totalEpisodes);
-          console.log(episode + " _ " + slug);
 
           if (
             localStorage.getItem("autoplay") === "true" &&
             parseInt(currentEpisode) !== parseInt(totalEpisodes)
           ) {
-            navigate(`/play/${slug}/${parseInt(episode) + 1}`);
+            navigate(`/play/${epId}/${parseInt(epNum) + 1}`);
           }
         });
 
@@ -245,12 +228,7 @@ function VideoPlayer({
       let player = new plyr(video, defaultOptions);
       setPlayer(new plyr(video, defaultOptions));
       let plyer;
-      var button = document.createElement("button");
-      button.classList.add("skip-button");
-      button.innerHTML = "Skip Intro";
-      button.addEventListener("click", function () {
-        player.forward(85);
-      });
+
       player.on("ready", () => {
         plyer = document.querySelector(".plyr__controls");
       });
@@ -261,7 +239,6 @@ function VideoPlayer({
       });
 
       player.on("exitfullscreen", (event) => {
-        document.querySelector(".skip-button").remove();
         window.screen.orientation.lock("portrait");
       });
 
@@ -356,11 +333,7 @@ function VideoPlayer({
                 <HiOutlineSwitchHorizontal />
               </button>
             </div>
-            <div className="tooltip">
-              <button title="Skip Intro" onClick={() => skipIntro()}>
-                <BsSkipEnd />
-              </button>
-            </div>
+            
           </div>
         </IconContext.Provider>
       </Conttainer>
@@ -368,7 +341,6 @@ function VideoPlayer({
         id="player"
         playsInline
         crossorigin
-        data-poster={banner}
         style={{
           aspectRatio: 16 / 9,
         }}

@@ -22,37 +22,19 @@ function MalAnimeDetails() {
   function readMoreHandler() {
     setExpanded(!expanded);
   }
-
-  async function getInfo() {
-    let aniRes = await axios({
-      url: process.env.REACT_APP_BASE_URL,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      data: {
-        query: searchByIdQuery,
-        variables: {
-          id,
-        },
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
-    setAnilistResponse(aniRes.data.data.Media);
-    let malRes = await axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}api/getidinfo?malId=${id}`)
-      .catch((err) => {
-        setNotAvailable(true);
-      });
-    setepisodeInfo(malRes.data);
-    setLoading(false);
+  if(anilistResponseError ){
+    return (
+    <NotAvailable>
+      <h1>Oops! This Anime Is Not Available</h1>
+    </NotAvailable>
+    )
   }
 
+  if(anilistResponseLoading || episodeInfoLoading  ){
+    return(<AnimeDetailsSkeleton /> )
+  }
   return (
     <div>
-      {anilistResponseLoading  &&  episodeInfoLoading && <AnimeDetailsSkeleton />}
       {!anilistResponseLoading && !episodeInfoLoading  && (
         <Content>
           {anilistResponse !== undefined && (
@@ -153,7 +135,7 @@ function MalAnimeDetails() {
               </ContentWrapper>
               {!episodeInfo && (
         <NotAvailable>
-          <h1>Oops! This Anime's Episode Is Not Available</h1>
+          <h1>Oops! This Anime&apos;s Episode Is Not Available</h1>
         </NotAvailable>
       )}
       {episodeInfo && <Episode>
@@ -179,6 +161,7 @@ function MalAnimeDetails() {
                       dub &&
                       [...Array(episodeInfo.dubTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
+                        key={i+1}
                           href={`/play/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
                         >
                           Episode {i + 1}
@@ -188,6 +171,7 @@ function MalAnimeDetails() {
                     {!dub &&
                       [...Array(episodeInfo.subTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
+                        key={i+1}
                           href={`/play/${episodeInfo.subLink}/${parseInt(i) + 1}`}
                         >
                           Episode {i + 1}
@@ -201,6 +185,7 @@ function MalAnimeDetails() {
                       dub &&
                       [...Array(episodeInfo.dubTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
+                        key={i+1}
                           href={`/play/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
                         >
                           {i + 1}
@@ -210,6 +195,7 @@ function MalAnimeDetails() {
                     {!dub &&
                       [...Array(episodeInfo.subTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
+                        key={i+1}
                           href={`/play/${episodeInfo.subLink}/${parseInt(i) + 1}`}
                         >
                           {i + 1}

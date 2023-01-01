@@ -19,7 +19,7 @@ function Top100() {
     fetcher
   )
 
-  if(error) return <div>"failed to load" {console.log(error)}</div>
+  if(error) return <div>Failed To Load {console.log(error)}</div>
   return (
     <div>
         
@@ -31,7 +31,7 @@ function Top100() {
           </Heading>
           <CardWrapper>
             {data.Page.media.map((item, i) => (
-              <Links href={"/id/" + item.idMal}>
+              <Links key={item.idMal} href={"/id/" + item.idMal}>
                 <img src={item.coverImage.large} alt="" />
                 <p>
                   {item.title.english !== null

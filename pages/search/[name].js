@@ -30,7 +30,7 @@ function SearchResults() {
           </Heading>
           <CardWrapper>
             {data.Page.media.map((item, i) => (
-              <Wrapper href={`/id/${item.idMal}`}>
+              <Wrapper key={item.idMal} href={`/id/${item.idMal}`}>
                 <img src={item.coverImage.extraLarge} alt="" />
                 <p>
                   {item.title.english !== null

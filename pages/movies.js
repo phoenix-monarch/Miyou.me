@@ -17,7 +17,7 @@ function PopularMovie() {
   const { data  , error   } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmalinfo?criteria=movie&count=100`  
   )
 
-  if(error) return <div>"failed to load" {console.log(error)}</div>
+  if(error) return <div>Failed To Load {console.log(error)}</div>
   return (
     <div>
       {!data && <SearchResultsSkeleton name="Trending Anime" />}
@@ -28,7 +28,7 @@ function PopularMovie() {
           </Heading>
           <CardWrapper>
             {data.Page.media.map((item, i) => (
-              <Links href={"/id/" + item.idMal}>
+              <Links key={item.idMal} href={"/id/" + item.idMal}>
                 <img src={item.coverImage.large} alt="" />
                 <p>
                   {item.title.english !== null
