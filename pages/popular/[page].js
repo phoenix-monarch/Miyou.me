@@ -16,11 +16,7 @@ function PopularAnime() {
   const { data  , error   } = useSWR(router.isReady ? PopularAnimeQuery  : null 
     ,
     fetcher
-    ,
-      {
-        cacheTime: 86400,
-        persist: true
-      }
+
   )
 
   if(error) return <div>Failed To Load {console.log(error)}</div>

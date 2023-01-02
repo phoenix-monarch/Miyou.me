@@ -17,11 +17,7 @@ function FavouriteAnime() {
   const { data  , error   } = useSWR(router.isReady ? favouritesAnimeQuery  : null 
     ,
     fetcher
-    ,
-      {
-        cacheTime: 86400,
-        persist: true
-      }
+    
   )
 
   if(error) return <div>failed to load {console.log(error)}</div>

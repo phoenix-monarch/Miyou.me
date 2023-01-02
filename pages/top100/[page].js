@@ -17,11 +17,6 @@ function Top100() {
   const { data  , error   } = useSWR(router.isReady ? top100AnimeQuery  : null 
     ,
     fetcher
-    ,
-    {
-      cacheTime: 86400,
-      persist: true
-    }
   )
 
   if(error) return <div>Failed To Load {console.log(error)}</div>

@@ -1,3 +1,4 @@
+import "../styles/global.css"
 import Nav from '../components/Navigation/Nav'
 import { Toaster } from "react-hot-toast";
 import "../styles/global.css"

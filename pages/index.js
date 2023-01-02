@@ -21,9 +21,7 @@ function Home() {
   const { data  , error   } = useSWR( 
     TrendingAnimeQuery,
     fetcher,
-    {
-      cacheTime: 86400 ,
-    }
+
   )
 
   function checkSize() {

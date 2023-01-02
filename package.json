@@ -14,7 +14,7 @@
     "cheerio": "^1.0.0-rc.12",
     "eslint": "8.30.0",
     "eslint-config-next": "13.1.1",
-    "graphql": "^16.6.0",
+    "graphql": "^15.8.0",
     "graphql-request": "^5.1.0",
     "hls.js": "^1.1.5",
     "next": "13.1.1",

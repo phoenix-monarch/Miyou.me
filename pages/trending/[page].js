@@ -1,5 +1,3 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
 import useSWR from "swr"
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -13,14 +11,11 @@ function TrendingAnime() {
   const {page} =router.query
   const fetcher = query => request(process.env.NEXT_PUBLIC_BASE_URL, query,{page: page,
   perPage: 50})
-  
+
   const { data  , error   } = useSWR(router.isReady ? TrendingAnimeQuery  : null 
     ,
     fetcher
-    ,{
-      cacheTime: 86400,
-      persist: true
-    }
+    
   )
   if(error) return <div>Failed To Load {console.log(error)}</div>
   return (
