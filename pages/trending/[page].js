@@ -18,7 +18,8 @@ function TrendingAnime() {
     ,
     fetcher
     ,{
-      cacheTime: 8600,
+      cacheTime: 86400,
+      persist: true
     }
   )
   if(error) return <div>Failed To Load {console.log(error)}</div>

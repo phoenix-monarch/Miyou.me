@@ -36,6 +36,7 @@ function WatchAnimeV2() {
     }
     return titleCaseStr;
   }
+  
   if (!error && data) {
     updateLocalStorage(
       data.animeId,

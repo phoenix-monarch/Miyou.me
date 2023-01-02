@@ -17,6 +17,11 @@ function SearchResults() {
     const { data  , error   } = useSWR(router.isReady ? searchAnimeQuery  : null 
       ,
       fetcher
+      ,
+      {
+        cacheTime: 86400,
+        persist: true
+      }
     )
 
     if(error) return <>`Failed To Load. Status Code : ${error.response.status}` {console.log(error.response.status)}</>
