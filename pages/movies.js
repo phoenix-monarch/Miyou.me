@@ -19,14 +19,10 @@ function PopularMovie() {
             <span>Trending Anime</span> Results
           </Heading>
           <CardWrapper>
-            {data.Page.media.map((item, i) => (
-              <Links key={item.idMal} href={"/id/" + item.idMal}>
-                <img src={item.coverImage.large} alt="" />
-                <p>
-                  {item.title.english !== null
-                    ? item.title.english
-                    : item.title.userPreferred}
-                </p>
+{data.data.map((item, i) => (
+              <Links to={"/id/" + item.node.id}>
+                <img src={item.node.main_picture.large} alt="" />
+                <p>{item.node.title}</p>
               </Links>
             ))}
           </CardWrapper>
