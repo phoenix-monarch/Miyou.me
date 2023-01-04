@@ -7,12 +7,16 @@ import { request } from "graphql-request";
 import AnimeDetailsSkeleton from "../../components/skeletons/AnimeDetailsSkeleton";
 import useWindowSize from "../../hooks/useWindowSize";
 import { searchByIdQuery } from "../../hooks/searchQueryStrings";
-
+import { cacheGraphQlFetch } from "../../hooks/cacheRequest";
 function MalAnimeDetails() {
   const router = useRouter()
   const {id} =router.query
-  const fetcher = query => request(process.env.NEXT_PUBLIC_BASE_URL, query,{id})
-  let { data : anilistResponse  , error :anilistResponseError,isLoading : anilistResponseLoading   } = useSWR(router.isReady ? searchByIdQuery  : null , fetcher
+  const { data : anilistResponse  , error :anilistResponseError,isLoading : anilistResponseLoading   } = useSWR( 
+    router.isReady ? 
+    [searchByIdQuery, {id: id},`Info:${id}`]
+    : null
+    ,
+    ([query, variables,keyCache]) => cacheGraphQlFetch(query, variables,keyCache)
   )
   const {data : episodeInfo ,error: episodeInfoError,isLoading : episodeInfoLoading} = useSWR(router.isReady ? `/api/getEpisodeInfo/${id}` : null )
   const { width } = useWindowSize();

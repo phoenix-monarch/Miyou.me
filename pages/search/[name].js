@@ -20,6 +20,8 @@ function SearchResults() {
 
     )
 
+    
+
     if(error) return <>`Failed To Load. Status Code : ${error.response.status}` {console.log(error.response.status)}</>
   return (
     <div>

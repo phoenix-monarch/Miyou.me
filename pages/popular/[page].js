@@ -6,17 +6,18 @@ import { request } from "graphql-request";
 import styled from "styled-components";
 import SearchResultsSkeleton from "../../components/skeletons/SearchResultsSkeleton";
 import { PopularAnimeQuery } from "../../hooks/searchQueryStrings";
-
+import { cacheGraphQlFetch } from "../../hooks/cacheRequest";
 function PopularAnime() {
   const router = useRouter()
   const {page} =router.query
-  const fetcher = query => request(process.env.NEXT_PUBLIC_BASE_URL, query,{page: page,
-  perPage: 50})
-  
-  const { data  , error   } = useSWR(router.isReady ? PopularAnimeQuery  : null 
-    ,
-    fetcher
 
+  
+  const { data  , error   } = useSWR( 
+    router.isReady ? 
+    [PopularAnimeQuery, {page: page, perPage :50},`PopularAnime${page}`]
+    : null
+    ,
+    ([query, variables,keyCache]) => cacheGraphQlFetch(query, variables,keyCache)
   )
 
   if(error) return <div>Failed To Load {console.log(error)}</div>

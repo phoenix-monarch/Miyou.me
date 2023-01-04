@@ -1,11 +1,9 @@
-import {useEffect} from "react";
 import styled from "styled-components";
-
 import Link from "next/link"
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from "swiper";
-// import { BsFillPlayFill } from "react-icons/bs";
-// import { IconContext } from "react-icons";
+import { BsFillPlayFill } from "react-icons/bs";
+import { IconContext } from "react-icons";
 
 
 import "swiper/css";
@@ -15,8 +13,10 @@ import "swiper/css/scrollbar";
 import useWindowSize from "../../hooks/useWindowSize";
 function Carousel({ images }) {
   const {height, width   } = useWindowSize();
-  
-  
+
+
+
+
   return (
     <div>
       <Swiper
@@ -67,7 +67,7 @@ function Carousel({ images }) {
                         </p>
                       )}
 
-                      {/* {width <= 600 && (
+                      {width <= 600 && (
                         <IconContext.Provider
                           value={{
                             size: "2rem",
@@ -81,23 +81,23 @@ function Carousel({ images }) {
                             <BsFillPlayFill />
                           </Button>
                         </IconContext.Provider>
-                      )} */}
+                      )}
                       {width > 600 && (
-                        // <IconContext.Provider
-                        //   value={{
-                        //     size: "1.15rem",
-                        //     style: {
-                        //       verticalAlign: "middle",
-                        //       marginBottom: "0.1rem",
-                        //       marginRight: "0.3rem",
-                        //     },
-                        //   }}
-                        // >
+                        <IconContext.Provider
+                          value={{
+                            size: "1.15rem",
+                            style: {
+                              verticalAlign: "middle",
+                              marginBottom: "0.1rem",
+                              marginRight: "0.3rem",
+                            },
+                          }}
+                        >
                           <Button href={"id/" + item.idMal}>
-                            {/* <BsFillPlayFill /> */}
+                            <BsFillPlayFill />
                             Watch Now
                           </Button>
-                        // </IconContext.Provider>
+                        </IconContext.Provider>
                       )}
                     </Content>
                   </Wrapper>

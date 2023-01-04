@@ -7,17 +7,18 @@ import { request } from "graphql-request";
 import styled from "styled-components";
 import SearchResultsSkeleton from "../../components/skeletons/SearchResultsSkeleton";
 import { favouritesAnimeQuery } from "../../hooks/searchQueryStrings";
-
+import { cacheGraphQlFetch } from "../../hooks/cacheRequest";
 function FavouriteAnime() {
   const router = useRouter()
   const {page} =router.query
-  const fetcher = query => request(process.env.NEXT_PUBLIC_BASE_URL, query,{page: page,
-  perPage: 50})
   
-  const { data  , error   } = useSWR(router.isReady ? favouritesAnimeQuery  : null 
+  
+  const { data  , error   } = useSWR( 
+    router.isReady ? 
+    [favouritesAnimeQuery, {page: page, perPage :50},`FavouriteAnime${page}`]
+    : null
     ,
-    fetcher
-    
+    ([query, variables,keyCache]) => cacheGraphQlFetch(query, variables,keyCache)
   )
 
   if(error) return <div>failed to load {console.log(error)}</div>

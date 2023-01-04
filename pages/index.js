@@ -1,43 +1,44 @@
-import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Link from "next/link"
 import Carousel from "../components/Home/Carousel";
-import axios from "axios";
 import useSWR from "swr"
 import AnimeCards from "../components/Home/AnimeCards";
 import HomeSkeleton from "../components/skeletons/CarouselSkeleton";
 import WatchingEpisodes from "../components/Home/WatchingEpisodes";
 import { TrendingAnimeQuery } from "../hooks/searchQueryStrings";
-import {request} from 'graphql-request'
+import {cacheGraphQlFetch} from "../hooks/cacheRequest"
 import useWindowSize from "../hooks/useWindowSize";
-
 function Home() {
+
+  
+
   const {width, height} = useWindowSize()
-  const fetcher = query =>
-    request(process.env.NEXT_PUBLIC_BASE_URL, query,{page: 1,
-      perPage: 15})
+
   
     
   const { data  , error   } = useSWR( 
-    TrendingAnimeQuery,
-    fetcher,
-
+    [TrendingAnimeQuery, {page: 1, perPage :15},"TrendingAnimeSlider"]
+    ,
+    ([query, variables,keyCache]) => cacheGraphQlFetch(query, variables,keyCache)
   )
-
+  
   function checkSize() {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
 
       let lsData = localStorage.getItem("Watching");
     
     lsData = JSON.parse(lsData);
     if (lsData.length === 0) {
       return false;
+    
     }
-    return true;
+      return true;
+    
   }
-  }  if(error) return <>`Failed To Load. Status Code : ${error.response.status}` {console.log(error.response.status)}</>
+  }  if(error) return <>Failed To Load. {console.log(error)} </>
 
   return (
+    
     <div>
       <HomeDiv>
         <HomeHeading>
@@ -45,7 +46,9 @@ function Home() {
         </HomeHeading>
 
         {!data  && <HomeSkeleton />}
+{console.log(data)}
         {data  && <Carousel images={data.Page.media} />}
+
         {
            typeof window !== "undefined" ? localStorage.getItem("Watching") && checkSize() && (
             <div>

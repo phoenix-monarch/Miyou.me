@@ -8,9 +8,9 @@ import AnimeCardsSkeleton from "../skeletons/AnimeCardsSkeleton";
 import useSWR from "swr"
 import "swiper/css";
 import "swiper/css/scrollbar";
-
+import {cacheFetchRequest } from "../../hooks/cacheRequest"
 function AnimeCards(props) {
-  const {data,error } =useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmalinfo?criteria=${props.criteria}&count=${props.count}`)
+  const { data , error } = useSWR([`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmalinfo?criteria=${props.criteria}&count=${props.count}`,`Criteria:${props.criteria}count:${props.count}`], ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
   if(error) return <>Failed To Load ... Check console for error {console.log(error)}</>
   return (
     <div>

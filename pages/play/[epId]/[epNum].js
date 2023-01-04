@@ -14,7 +14,7 @@ import WatchAnimeSkeleton from "../../../components/skeletons/WatchAnimeSkeleton
 import useWindowSize from "../../../hooks/useWindowSize";
 import VideoPlayer from "../../../components/VideoPlayer/VideoPlayer";
 
-
+import { cacheFetchRequest } from "../../../hooks/cacheRequest";
 import toast from "react-hot-toast";
 import Head from "next/head";
 
@@ -25,7 +25,7 @@ function WatchAnimeV2() {
   const [fullScreen, setFullScreen] = useState(false);
   const [internalPlayer, setInternalPlayer] = useState(true);
 
-  const { data , error } = useSWR( router.isReady ? `${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmixlinks?id=${epId}&ep=${epNum}` : null)
+  const { data , error } = useSWR( router.isReady ? [`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmixlinks?id=${epId}&ep=${epNum}`] : null, ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
   
   function toTitleCase(str) {
     let titleCaseStr = str.replace(/-/g, ' ').replace(/\b\w/g, function(txt) {
@@ -44,14 +44,12 @@ function WatchAnimeV2() {
       data.mal_id,
       data.isDub
     );
+    
     <Head>
         <title>{router.isReady ? `${toTitleCase(epId)}  EP-${epNum} - Miyou` : null}</title>
       </Head>
   }
-  async function getEpisodeLinks() {
-   
-  }
-
+ 
   function fullScreenHandler(e) {
     setFullScreen(!fullScreen);
     let video = document.getElementById("video");
@@ -65,7 +63,7 @@ function WatchAnimeV2() {
   }
 
   function updateLocalStorage(animeId, epNum, malId, isDub) {
-    if(typeof window === !undefined){
+    if(typeof window !== "undefined"){
     if (localStorage.getItem("Watching")) {
       let data = localStorage.getItem("Watching");
       data = JSON.parse(data);

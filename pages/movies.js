@@ -1,21 +1,13 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
 import useSWR from "swr"
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { request } from "graphql-request";
 import styled from "styled-components";
 import SearchResultsSkeleton from "../components/skeletons/SearchResultsSkeleton";
-
+import { cacheFetchRequest } from "../hooks/cacheRequest";
 
 function PopularMovie() {
-  const router = useRouter()
-  const {page} =router.query
-  const fetcher = query => request('https://graphql.anilist.co/', query,{page: page,
-  perPage: 50})
   
-  const { data  , error   } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmalinfo?criteria=movie&count=100`  
-  )
+
+  const { data , error } = useSWR([`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmalinfo?criteria=movie&count=100`,`Popular Movies`] , ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
 
   if(error) return <div>Failed To Load {console.log(error)}</div>
   return (
