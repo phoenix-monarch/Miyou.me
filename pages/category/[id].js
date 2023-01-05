@@ -30,7 +30,7 @@ function AnimeDetails() {
   }
 
   function getLocalStorage(data) {
-    if(typeof window === !undefined){
+    if(typeof window !== undefined){
       if (localStorage.getItem("Animes")) {
         let lsData = localStorage.getItem("Animes");
         lsData = JSON.parse(lsData);

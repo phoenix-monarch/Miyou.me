@@ -21,19 +21,12 @@ function WatchingEpisodes() {
   useEffect(() => {
     getAnimeData();
   }, []);
-  [
-    {
-        "animeId": "boku-no-hero-academia-6th-season",
-        "epNum": 11,
-        "malId": 49918,
-        "isDub": false
-    }
-]
   async function getAnimeData() {
     setLoading(true);
     let data = localStorage.getItem("Watching");
     data = JSON.parse(data);
     setLocalData(data);
+    console.log(localData)
     let ids = [];
     for (let i = 0; i < data.length; i++) {
       ids.push(data[i].malId);
@@ -138,7 +131,7 @@ function WatchingEpisodes() {
                 </IconContext.Provider>
 
                 <Link
-                  href={`play/${localData[i].animeId}/${localData[i].episode}`}
+                  href={`play/${localData[i].animeId}/${localData[i].epNum}`}
                 >
                   <img src={item.coverImage.extraLarge} alt="" />
                 </Link>
@@ -149,7 +142,7 @@ function WatchingEpisodes() {
                   {localData[i].isDub ? " (Dub)" : " (Sub)"}
                 </p>
                 <p className="episodeNumber">
-                  {"Episode - " + localData[i].episode}
+                  {"Episode - " + localData[i].epNum}
                 </p>
               </Wrapper>
             </SwiperSlide>

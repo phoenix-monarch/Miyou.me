@@ -8,14 +8,10 @@ import WatchingEpisodes from "../components/Home/WatchingEpisodes";
 import { TrendingAnimeQuery } from "../hooks/searchQueryStrings";
 import {cacheGraphQlFetch} from "../hooks/cacheRequest"
 import useWindowSize from "../hooks/useWindowSize";
+import { Fragment } from 'react';
 function Home() {
-
-  
-
   const {width, height} = useWindowSize()
 
-  
-    
   const { data  , error   } = useSWR( 
     [TrendingAnimeQuery, {page: 1, perPage :15},"TrendingAnimeSlider"]
     ,
@@ -46,21 +42,21 @@ function Home() {
         </HomeHeading>
 
         {!data  && <HomeSkeleton />}
-{console.log(data)}
         {data  && <Carousel images={data.Page.media} />}
 
-        {
-           typeof window !== "undefined" ? localStorage.getItem("Watching") && checkSize() && (
-            <div>
+        {typeof window !== "undefined"?
+            localStorage.getItem("Watching") && checkSize() && (
+             <div>
               <HeadingWrapper>
-                <Heading>
+              <Heading>
                   <span>Continue</span> Watching
-                </Heading>
-              </HeadingWrapper>
-              <WatchingEpisodes />
-            </div>
-          ) : null
-        }
+              </Heading>
+               </HeadingWrapper>
+    <WatchingEpisodes />
+             </div>
+           ) 
+           : null
+            }
     
         <div>
           <HeadingWrapper>
