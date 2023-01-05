@@ -12,28 +12,21 @@ function PopularMovie() {
   if(error) return <div>Failed To Load {console.log(error)}</div>
   return (
     <div>
-      {!data && <SearchResultsSkeleton name="Trending Anime" />}
+      {!data && <SearchResultsSkeleton name="Popular Movie" />}
       {data && (
         <Parent>
           <Heading>
-            <span>Trending Anime</span> Results
+            <span>Popular Movie</span> Results
           </Heading>
           <CardWrapper>
 {data.data.map((item, i) => (
-              <Links to={"/id/" + item.node.id}>
+              <Links href={"/id/" + item.node.id}>
                 <img src={item.node.main_picture.large} alt="" />
                 <p>{item.node.title}</p>
               </Links>
             ))}
           </CardWrapper>
-          <NavButtons>
-            {page > 1 && (
-              <NavButton href={"/trending/" + (parseInt(page) - 1)}>
-                Previous
-              </NavButton>
-            )}
-            <NavButton href={"/trending/" + (parseInt(page) + 1)}>Next</NavButton>
-          </NavButtons>
+         
         </Parent>
       )}
       
@@ -41,23 +34,6 @@ function PopularMovie() {
   );
 }
 
-const NavButtons = styled.div`
-  margin-top: 2.5rem;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-`;
-
-const NavButton = styled(Link)`
-  padding: 0.8rem 2rem;
-  text-decoration: none;
-  color: white;
-  background-color: none;
-  border: 2px solid #53507a;
-  border-radius: 0.5rem;
-`;
 
 const Parent = styled.div`
   margin: 2rem 5rem 2rem 5rem;

@@ -21,7 +21,14 @@ function WatchingEpisodes() {
   useEffect(() => {
     getAnimeData();
   }, []);
-
+  [
+    {
+        "animeId": "boku-no-hero-academia-6th-season",
+        "epNum": 11,
+        "malId": 49918,
+        "isDub": false
+    }
+]
   async function getAnimeData() {
     setLoading(true);
     let data = localStorage.getItem("Watching");
@@ -32,7 +39,7 @@ function WatchingEpisodes() {
       ids.push(data[i].malId);
     }
     let result = await axios({
-      url: process.env.REACT_APP_BASE_URL,
+      url: process.env.NEXT_PUBLIC_BASE_URL,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -131,7 +138,7 @@ function WatchingEpisodes() {
                 </IconContext.Provider>
 
                 <Link
-                  to={`play/${localData[i].animeId}/${localData[i].episode}`}
+                  href={`play/${localData[i].animeId}/${localData[i].episode}`}
                 >
                   <img src={item.coverImage.extraLarge} alt="" />
                 </Link>
