@@ -4,6 +4,8 @@ import { Toaster } from "react-hot-toast";
 import "../styles/global.css"
 import { SWRConfig } from 'swr';
 import "react-loading-skeleton/dist/skeleton.css";
+import Head from "next/head"
+
 export default function App({ Component, pageProps }) {
   return <>
   <SWRConfig value={ {
@@ -12,7 +14,9 @@ export default function App({ Component, pageProps }) {
       fetcher: (resource, init) => fetch(resource, init).then(res => res.json())}}
   >
 
-
+<Head>
+      <link rel="icon" href={"/favicon.ico"} />
+</Head>
   <Nav/>
   <Component {...pageProps} />
   <Toaster

@@ -20,7 +20,7 @@ function PopularMovie() {
           </Heading>
           <CardWrapper>
 {data.data.map((item, i) => (
-              <Links href={"/id/" + item.node.id}>
+              <Links key={item.node.id} href={"/id/" + item.node.id}>
                 <img src={item.node.main_picture.large} alt="" />
                 <p>{item.node.title}</p>
               </Links>
