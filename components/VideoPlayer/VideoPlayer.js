@@ -173,7 +173,7 @@ function VideoPlayer({
             localStorage.getItem("autoplay") === "true" &&
             parseInt(currentEpisode) !== parseInt(totalEpisodes)
           ) {
-            navigate(`/play/${epId}/${parseInt(epNum) + 1}`);
+            navigate(`/v1/${epId}/${parseInt(epNum) + 1}`);
           }
         });
 

@@ -13,9 +13,8 @@ export default function App({ Component, pageProps }) {
      revalidateOnReconnect: false,
       fetcher: (resource, init) => fetch(resource, init).then(res => res.json())}}
   >
-
 <Head>
-      <link rel="icon" href={"/favicon.ico"} />
+<title>Miyou - Watch Anime Free Online With English Sub and Dub</title>
 </Head>
   <Nav/>
   <Component {...pageProps} />

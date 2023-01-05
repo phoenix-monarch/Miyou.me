@@ -18,7 +18,7 @@ import { cacheFetchRequest } from "../../../hooks/cacheRequest";
 import toast from "react-hot-toast";
 import Head from "next/head";
 
-function WatchAnimeV2() {
+function WatchAnimeV1() {
   const router = useRouter();
   const {epId,epNum} = router.query
   const { width } = useWindowSize();
@@ -247,7 +247,7 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          href={`/play/${data.animeId}/${
+                          href={`/v1/${data.animeId}/${
                             parseInt(epNum) - 1
                           }`}
                           style={
@@ -275,7 +275,7 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          href={`/play/${data.animeId}/${
+                          href={`/v1/${data.animeId}/${
                             parseInt(epNum) - 1
                           }`}
                           style={
@@ -302,7 +302,7 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          href={`/play/${data.animeId}/${
+                          href={`/v1/${data.animeId}/${
                             parseInt(epNum) + 1
                           }`}
                           style={
@@ -331,7 +331,7 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          href={`/play/${data.animeId}/${
+                          href={`/v1/${data.animeId}/${
                             parseInt(epNum) + 1
                           }`}
                           style={
@@ -358,7 +358,7 @@ function WatchAnimeV2() {
                       (x, i) => (
                         <EpisodeLink
                         key={i+1}
-                          href={`/play/${data.animeId}/${
+                          href={`/v1/${data.animeId}/${
                             parseInt(i) + 1
                           }`}
                           style={
@@ -642,4 +642,4 @@ const Titles = styled.div`
   }
 `;
 
-export default WatchAnimeV2;
+export default WatchAnimeV1;

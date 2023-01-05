@@ -54,13 +54,13 @@ function MalAnimeDetails() {
               <ContentWrapper>
                 <Poster>
                   <img src={anilistResponse.Media.coverImage.extraLarge} alt="" />
-                  {episodeInfo && <Button href={`/play/${episodeInfo.subLink}/1`}>
+                  {episodeInfo && <Button href={`/v1/${episodeInfo.subLink}/1`}>
                     Watch Sub
                   </Button>}
                   {episodeInfo && episodeInfo.isDub && (
                     <Button
                       className="outline"
-                      href={`/play/${episodeInfo.dubLink}/1`}
+                      href={`/v1/${episodeInfo.dubLink}/1`}
                     >
                       Watch Dub
                     </Button>
@@ -142,10 +142,13 @@ function MalAnimeDetails() {
           <h1>Oops! This Anime&apos;s Episode Is Not Available</h1>
         </NotAvailable>
       )}
-      {episodeInfo && <Episode>
+      {episodeInfo && 
+      <Episode>
                 <DubContainer>
                   <h2>Episodes</h2>
                   {episodeInfo.isDub && (
+                    <>
+                    
                     <div class="switch">
                       <label for="switch">
                         <input
@@ -157,7 +160,10 @@ function MalAnimeDetails() {
                         <span class="label">{dub ? "Dub" : "Sub"}</span>
                       </label>
                     </div>
+                    
+                    </>
                   )}
+              
                 </DubContainer>
                 {width > 600 && (
                   <Episodes>
@@ -166,7 +172,7 @@ function MalAnimeDetails() {
                       [...Array(episodeInfo.dubTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
                         key={i+1}
-                          href={`/play/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
+                          href={`/v1/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
                         >
                           Episode {i + 1}
                         </EpisodeLink>
@@ -176,7 +182,7 @@ function MalAnimeDetails() {
                       [...Array(episodeInfo.subTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
                         key={i+1}
-                          href={`/play/${episodeInfo.subLink}/${parseInt(i) + 1}`}
+                          href={`/v1/${episodeInfo.subLink}/${parseInt(i) + 1}`}
                         >
                           Episode {i + 1}
                         </EpisodeLink>
@@ -190,7 +196,7 @@ function MalAnimeDetails() {
                       [...Array(episodeInfo.dubTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
                         key={i+1}
-                          href={`/play/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
+                          href={`/v1/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
                         >
                           {i + 1}
                         </EpisodeLink>
@@ -200,7 +206,7 @@ function MalAnimeDetails() {
                       [...Array(episodeInfo.subTotalEpisodes)].map((x, i) => (
                         <EpisodeLink
                         key={i+1}
-                          href={`/play/${episodeInfo.subLink}/${parseInt(i) + 1}`}
+                          href={`/v1/${episodeInfo.subLink}/${parseInt(i) + 1}`}
                         >
                           {i + 1}
                         </EpisodeLink>
