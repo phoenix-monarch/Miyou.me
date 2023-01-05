@@ -25,7 +25,7 @@ function WatchAnimeV2() {
   const [fullScreen, setFullScreen] = useState(false);
   const [internalPlayer, setInternalPlayer] = useState(true);
 
-  const { data , error } = useSWR( router.isReady ? [`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmixlinks?id=${epId}&ep=${epNum}`] : null, ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
+  const { data , error } = useSWR( router.isReady ? [`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmixlinks?id=${epId}&ep=${epNum}`,`play${epId}&${epNum}`] : null, ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
   
   function toTitleCase(str) {
     let titleCaseStr = str.replace(/-/g, ' ').replace(/\b\w/g, function(txt) {
