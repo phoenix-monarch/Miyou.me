@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![Miyou Banner](https://user-images.githubusercontent.com/61660793/202897934-8656a581-a55a-47d7-9658-ee9e4f2295dc.png)
 
-## Getting Started
+# Welcome to Miyou Github Repository
 
-First, run the development server:
+### This repository is the  next js implementation of this website [repo](https://github.com/debsishu/Miyou) Hosted [URL](https://miyou.me/)
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## To run locally
+### `npm i` (Install the dependencies)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### `npm start` (Run locally)
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Todo
 
-To learn more about Next.js, take a look at the following resources:
+### Adding more servers to watch in the info page like tenshi.moe,animepahe and zoro.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Contributions are always welcome.
 
-## Deploy on Vercel
+You can contribute to this project by forking the project, adding or making changes, and submitting a pull request.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Disclaimer
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+ You can only test this on your localhost and cannot host it. It will give you CORS error.
