@@ -11,6 +11,7 @@ import { cacheGraphQlFetch } from "../../hooks/cacheRequest";
 function MalAnimeDetails() {
   const router = useRouter()
   const {id} =router.query
+  const [server,setServer] = useState("")
   const { data : anilistResponse  , error :anilistResponseError,isLoading : anilistResponseLoading   } = useSWR( 
     router.isReady ? 
     [searchByIdQuery, {id: id},`Info:${id}`]
@@ -18,7 +19,97 @@ function MalAnimeDetails() {
     ,
     ([query, variables,keyCache]) => cacheGraphQlFetch(query, variables,keyCache)
   )
-  const {data : episodeInfo ,error: episodeInfoError,isLoading : episodeInfoLoading} = useSWR(router.isReady ? `/api/getEpisodeInfo/${id}` : null )
+
+  // const malSyncData = {
+  //   "createdAt": "2020-10-12T15:37:58.000Z",
+  //   "updatedAt": "2022-11-30T14:22:38.000Z",
+  //   "checkedAt": "2022-11-30T14:22:38.000Z",
+  //   "id": 1,
+  //   "type": "anime",
+  //   "title": "Cowboy Bebop",
+  //   "altTitle": [
+  //   "Cowboy Bebop",
+  //   "カウボーイビバップ"
+  //   ],
+  //   "url": "https://myanimelist.net/anime/1/Cowboy_Bebop",
+  //   "image": "https://cdn.myanimelist.net/images/anime/4/19644.jpg",
+  //   "category": "TV",
+  //   "hentai": false,
+  //   "externalLinks": [],
+  //   "legalLinks": [],
+  //   "deletedAt": null,
+  //   "anidbId": 23,
+  //   "Pages": {
+  //   "9anime": {},
+  //   "Gogoanime": {},
+  //   "Tenshi": {
+  //   "9ronp4b4": {
+  //   "createdAt": "2022-07-26T16:01:19.378Z",
+  //   "updatedAt": "2022-07-26T16:20:00.000Z",
+  //   "checkedAt": "2022-07-26T16:01:19.000Z",
+  //   "id": 41644,
+  //   "identifier": "9ronp4b4",
+  //   "type": "anime",
+  //   "page": "Tenshi",
+  //   "title": "Cowboy Bebop",
+  //   "url": "https://tenshi.moe/anime/9ronp4b4",
+  //   "image": "https://tenshi.moe/images/anime/vfqbhdumt-6118d71118ca6371064077.jpg",
+  //   "hentai": false,
+  //   "sticky": false,
+  //   "active": true,
+  //   "actorId": null,
+  //   "malId": 1,
+  //   "aniId": 1,
+  //   "deletedAt": null
+  //   }
+  //   },
+  //   "animepahe": {
+  //   "271": {
+  //   "identifier": "271",
+  //   "malId": 1,
+  //   "type": "anime",
+  //   "page": "animepahe",
+  //   "title": "Cowboy Bebop",
+  //   "url": "https://animepahe.com/a/271"
+  //   }
+  //   },
+  //   "AniMixPlay": {
+  //   "1": {
+  //   "identifier": "1",
+  //   "malId": 1,
+  //   "type": "anime",
+  //   "page": "AniMixPlay",
+  //   "title": "Cowboy Bebop",
+  //   "url": "https://animixplay.to/anime/1"
+  //   }
+  //   },
+  //   "YugenAnime": {
+  //   "640": {
+  //   "identifier": "640",
+  //   "malId": 1,
+  //   "type": "anime",
+  //   "page": "YugenAnime",
+  //   "title": "Cowboy Bebop",
+  //   "url": "https://yugen.to/anime/640/cowboy-bebop/"
+  //   }
+  //   },
+  //   "Zoro": {
+  //   "27": {
+  //   "identifier": "27",
+  //   "malId": 1,
+  //   "type": "anime",
+  //   "page": "Zoro",
+  //   "title": "Cowboy Bebop",
+  //   "url": "https://zoro.to/cowboy-bebop-27"
+  //   }
+  //   }
+  //   }
+  //   }
+  // const {data : malSyncData,error : malSyncDataError ,isLoading : malSyncDataLoading} = useSWR( router.isReady ? [`https://raw.githubusercontent.com/MALSync/MAL-Sync-Backup/master/data/myanimelist/anime/${id}.json`,`malSync${id}`] : null, ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
+  const {data : malSyncData,error : malSyncDataError} = useSWR(router.isReady ? `https://raw.githubusercontent.com/MALSync/MAL-Sync-Backup/master/data/myanimelist/anime/${id}.json`  : null)
+  const {data : gogoEpisodeInfo ,error: gogoEpisodeInfoError,isLoading : gogoEpisodeInfoLoading} = useSWR(router.isReady && server == "gogoanime" ? `/api/gogoanime/getEpisodeInfo/${id}` : null )
+  const {data : tenshiEpisodeInfo ,error: tenshiEpisodeInfoError,isLoading : tenshiEpisodeInfoLoading} = useSWR(router.isReady && server == "tenshi" && malSyncData !== undefined ? `/api/tenshi/getEpInfo/${Object.keys(malSyncData.Pages.Tenshi)[0]}` : null )
+  
   const { width } = useWindowSize();
   const [expanded, setExpanded] = useState(false);
   const [dub, setDub] = useState(false);
@@ -26,7 +117,25 @@ function MalAnimeDetails() {
   function readMoreHandler() {
     setExpanded(!expanded);
   }
-  if(anilistResponseError ){
+  useEffect(() => {
+    if(malSyncData ){
+      console.log("function called")
+      if(malSyncData.Pages.Tenshi){
+        setServer("tenshi")
+        console.log(server)
+      }
+      else{
+        setServer("gogoanime")
+        console.log(server)
+      }
+    }
+  }, [malSyncData])
+  
+  
+  function serverButtonHandler(server){
+    setServer(server)
+  }
+  if(anilistResponseError  ){
     return (
     <NotAvailable>
       <h1>Oops! This Anime Is Not Available</h1>
@@ -34,12 +143,12 @@ function MalAnimeDetails() {
     )
   }
 
-  if(anilistResponseLoading || episodeInfoLoading  ){
+  if(anilistResponseLoading || gogoEpisodeInfoLoading || tenshiEpisodeInfoLoading  ){
     return(<AnimeDetailsSkeleton /> )
   }
   return (
     <div>
-      {!anilistResponseLoading && !episodeInfoLoading  && (
+      {!anilistResponseLoading && !gogoEpisodeInfoLoading   && (
         <Content>
           {anilistResponse !== undefined && (
             <div>
@@ -54,17 +163,23 @@ function MalAnimeDetails() {
               <ContentWrapper>
                 <Poster>
                   <img src={anilistResponse.Media.coverImage.extraLarge} alt="" />
-                  {episodeInfo && <Button href={`/v1/${episodeInfo.subLink}/1`}>
+                  {gogoEpisodeInfo && <Button href={`/v1/${gogoEpisodeInfo.subLink}/1`}>
                     Watch Sub
                   </Button>}
-                  {episodeInfo && episodeInfo.isDub && (
+                  {tenshiEpisodeInfo && server == "tenshi" &&
+                 <Button href={`/v2/${Object.keys(malSyncData.Pages.Tenshi)[0]}/1`}>
+                 Watch Now
+               </Button>
+                  }
+                  {gogoEpisodeInfo && (
+                   gogoEpisodeInfo.isDub && (
                     <Button
                       className="outline"
-                      href={`/v1/${episodeInfo.dubLink}/1`}
+                      href={`/v1/${gogoEpisodeInfo.dubLink}/1`}
                     >
                       Watch Dub
                     </Button>
-                  )}
+                  ) )}
                 </Poster>
                 <div>
                   <h1>{anilistResponse.Media.title.userPreferred}</h1>
@@ -120,15 +235,15 @@ function MalAnimeDetails() {
                     {anilistResponse.Media.status}
                   </p>
                   {
-                    episodeInfo ? <>
+                    gogoEpisodeInfo ? <>
                     <p>
                       <span>Number of Sub Episodes: </span>
-                      {episodeInfo.subTotalEpisodes}
+                      {gogoEpisodeInfo.subTotalEpisodes}
                     </p>
-                    {episodeInfo.isDub && (
+                    {gogoEpisodeInfo.isDub && (
                       <p>
                         <span>Number of Dub Episodes: </span>
-                        {episodeInfo.dubTotalEpisodes}
+                        {gogoEpisodeInfo.dubTotalEpisodes}
                       </p>
                     )}
                     </>
@@ -137,83 +252,102 @@ function MalAnimeDetails() {
                   
                 </div>
               </ContentWrapper>
-              {!episodeInfo && (
+              {!gogoEpisodeInfo && server == "gogoanime" && (
         <NotAvailable>
           <h1>Oops! This Anime&apos;s Episode Is Not Available</h1>
         </NotAvailable>
       )}
-      {episodeInfo && 
+  
       <Episode>
-                <DubContainer>
+                <DubContainer className="flex   ">
                   <h2>Episodes</h2>
-                  {episodeInfo.isDub && (
-                    <>
+                  {gogoEpisodeInfo && (gogoEpisodeInfo.isDub && (
+        
                     
-                    <div class="switch">
-                      <label for="switch">
+                    <div className="mb-[15px]">
+                      <label for="switch" className="flex items-center justify-center">
                         <input
                           type="checkbox"
                           id="switch"
+                          className="toggle toggle-primary toggle-lg"
+                          checked={dub}
                           onChange={(e) => setDub(!dub)}
                         ></input>
-                        <span class="indicator"></span>
+                        {/* <span class="indicator"></span> */}
                         <span class="label">{dub ? "Dub" : "Sub"}</span>
                       </label>
                     </div>
                     
-                    </>
-                  )}
-              
+                   
+                  ))}
+                  {malSyncData &&
+                  <div className="ml-auto"> 
+                   <div className="dropdown float-right dropdown-hover">
+                   <label tabIndex={0} className="btn m-1">{server}</label>
+                   <ul tabIndex={0} className="dropdown-content menu text-black  p-2 shadow bg-base-100 rounded-box w-52">
+                   {malSyncData.Pages.Tenshi ? (<li onClick={() => serverButtonHandler("tenshi")}><a>Tenshi</a></li>) : null} 
+                     <li onClick={() => serverButtonHandler("gogoanime")}><a>Gogoanime</a></li>
+                   </ul>
+                 </div>
+                 </div>
+                  }
+                
                 </DubContainer>
-                {width > 600 && (
-                  <Episodes>
-                    {episodeInfo.isDub &&
-                      dub &&
-                      [...Array(episodeInfo.dubTotalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                        key={i+1}
-                          href={`/v1/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
-                        >
-                          Episode {i + 1}
-                        </EpisodeLink>
-                      ))}
+             {  server == "gogoanime" && gogoEpisodeInfo && (
+              <Episodes>
+              {gogoEpisodeInfo.isDub &&
+                dub &&
+                [...Array(gogoEpisodeInfo.dubTotalEpisodes)].map((x, i) => (
+                  <EpisodeLink
+                  key={i+1}
+                  className="flex justify-center items-center"
+                    href={`/v1/${gogoEpisodeInfo.dubLink}/${parseInt(i) + 1}`}
+                  >
+                    <div className="hidden sm:block">
+                    Episode 
+                    </div>
+                    &nbsp;{i + 1}
+                  </EpisodeLink>
+                ))}
 
-                    {!dub &&
-                      [...Array(episodeInfo.subTotalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                        key={i+1}
-                          href={`/v1/${episodeInfo.subLink}/${parseInt(i) + 1}`}
-                        >
-                          Episode {i + 1}
-                        </EpisodeLink>
-                      ))}
-                  </Episodes>
-                )}
-                {width <= 600 && (
-                  <Episodes>
-                    {episodeInfo.isDub &&
-                      dub &&
-                      [...Array(episodeInfo.dubTotalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                        key={i+1}
-                          href={`/v1/${episodeInfo.dubLink}/${parseInt(i) + 1}`}
-                        >
-                          {i + 1}
-                        </EpisodeLink>
-                      ))}
-
-                    {!dub &&
-                      [...Array(episodeInfo.subTotalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                        key={i+1}
-                          href={`/v1/${episodeInfo.subLink}/${parseInt(i) + 1}`}
-                        >
-                          {i + 1}
-                        </EpisodeLink>
-                      ))}
-                  </Episodes>
-                )}
-              </Episode>}
+              {!dub &&
+                [...Array(gogoEpisodeInfo.subTotalEpisodes)].map((x, i) => (
+                  <EpisodeLink
+                  key={i+1}
+                  className="flex justify-center items-center"
+                    href={`/v1/${gogoEpisodeInfo.subLink}/${parseInt(i) + 1}`}
+                  >
+                    <div className="hidden sm:block">
+                    Episode 
+                    </div>
+                    &nbsp;{i + 1}
+                  </EpisodeLink>
+                ))}
+            </Episodes>
+             )}
+                  
+                  {  server == "tenshi" && tenshiEpisodeInfo && (
+              <Episodes>
+              {
+                [...Array(parseInt(tenshiEpisodeInfo.totalEp))].map((x, i) => (
+                  <EpisodeLink
+                  key={i+1}
+                  className="flex justify-center items-center"
+                    href={`/v2/${Object.keys(malSyncData.Pages.Tenshi)[0]}/${parseInt(i) + 1}`}
+                  >
+                    {console.log(tenshiEpisodeInfo.totalEp,i)}
+                    <div className="hidden sm:block">
+                    Episode 
+                    </div>
+                    &nbsp;{i + 1}
+                  </EpisodeLink>
+                ))
+                }
+             
+            </Episodes>
+             )}
+                
+              </Episode>
               
             </div>
           )}
@@ -256,62 +390,7 @@ const DubContainer = styled.div`
   align-items: center;
   margin-bottom: 0.5rem;
 
-  .switch {
-    position: relative;
-
-    label {
-      display: flex;
-      align-items: center;
-      font-family: "Lexend", sans-serif;
-      font-weight: 400;
-      cursor: pointer;
-      margin-bottom: 0.3rem;
-    }
-
-    .label {
-      margin-bottom: 0.7rem;
-      font-weight: 500;
-    }
-
-    .indicator {
-      position: relative;
-      width: 60px;
-      height: 30px;
-      background: #242235;
-      border: 2px solid #393653;
-      display: block;
-      border-radius: 30px;
-      margin-right: 10px;
-      margin-bottom: 10px;
-
-      &:before {
-        width: 22px;
-        height: 22px;
-        content: "";
-        display: block;
-        background: #7676ff;
-        border-radius: 26px;
-        transform: translate(2px, 2px);
-        position: relative;
-        z-index: 2;
-        transition: all 0.5s;
-      }
-    }
-    input {
-      visibility: hidden;
-      position: absolute;
-
-      &:checked {
-        & + .indicator {
-          &:before {
-            transform: translate(32px, 2px);
-          }
-          &:after {
-            width: 54px;
-          }
-        }
-      }
-    }
+ 
   }
 `;
 

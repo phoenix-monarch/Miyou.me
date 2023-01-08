@@ -67,7 +67,7 @@ function Carousel({ images }) {
                         </p>
                       )}
 
-                      {width <= 600 && (
+                  
                         <IconContext.Provider
                           value={{
                             size: "2rem",
@@ -77,28 +77,15 @@ function Carousel({ images }) {
                             },
                           }}
                         >
-                          <Button href={"id/" + item.idMal}>
-                            <BsFillPlayFill />
-                          </Button>
+                          <button className="btn-primary btn" href={"id/" + item.idMal}>
+                            <BsFillPlayFill className="md:h-8 md:w-8" />
+                            <div className="hidden md:block">
+             Watch 
+             </div>
+                          </button>
                         </IconContext.Provider>
-                      )}
-                      {width > 600 && (
-                        <IconContext.Provider
-                          value={{
-                            size: "1.15rem",
-                            style: {
-                              verticalAlign: "middle",
-                              marginBottom: "0.1rem",
-                              marginRight: "0.3rem",
-                            },
-                          }}
-                        >
-                          <Button href={"id/" + item.idMal}>
-                            <BsFillPlayFill />
-                            Watch Now
-                          </Button>
-                        </IconContext.Provider>
-                      )}
+                   
+                      
                     </Content>
                   </Wrapper>
                 </Container>
@@ -134,7 +121,6 @@ const Wrapper = styled.div`
   height: 50%;
   bottom: 0;
   left: 0;
-  margin-bottom: 0.2rem;
   background: linear-gradient(
     180deg,
     rgba(27, 26, 39, 0) 0%,
