@@ -1,4 +1,5 @@
 import cheerio from 'cheerio';
+import { tenshiHeader } from '../../../../../hooks/headers';
 export default async function handler(req, res) {
     const {animeId , epNum} = req.query
     const {Source , TotalEp,Name} = await scrapeDetails(animeId , epNum)
@@ -8,7 +9,8 @@ export default async function handler(req, res) {
 };
 
 const scrapeDetails = async function (epId,epNum ){
-    const response  = await fetch(`https://tenshi.moe/anime/${epId}/${epNum}`);
+    const response  = await fetch(`https://tenshi.moe/anime/${epId}/${epNum}`,tenshiHeader);
+    console.log(response)
     const res = await response.text()
     const $ = cheerio.load(res);
 
