@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { MdPlayDisabled, MdPlayArrow } from "react-icons/md";
 import { IconContext } from "react-icons";
@@ -15,6 +15,7 @@ function VideoPlayer({
   setInternalPlayer,
   previewThumbnails ,
   dub,
+  dubAvailable,
   setDub,
   title,
   server,
@@ -40,7 +41,7 @@ function VideoPlayer({
   useEffect(() => {
     console.log(`Switched to ${dub}`);
   }, [dub]);
-
+  const playerRef = useRef(null);
   useEffect(() => {
 
     if (!localStorage.getItem("autoplay")) {
@@ -96,12 +97,18 @@ function VideoPlayer({
     };
 
     if (type === "mp4") {
+      
       // video.removeAttribute("crossorigin");
-      const player = new plyr(video, defaultOptions);
-      player.source = {
+      playerRef.current = new plyr(video, defaultOptions);
+      playerRef.current.source = {
         type: "video",
         title: "Example title",
         sources: src,
+      };
+
+      return () => {
+        // dispose of the player
+        playerRef.current.destroy();
       };
     }
     if(type === "hls"){
@@ -305,6 +312,7 @@ function VideoPlayer({
       };
     }
   }
+  
   }, [src]);
 
   return (
@@ -325,7 +333,7 @@ function VideoPlayer({
           }}
         >
           {internalPlayer && <p>Internal Player</p>}
-          {server == "tenshi" && <p>Playing {dub ? "Dub" : "Sub"}</p> }
+          {server == "tenshi" && (dubAvailable ? <p>Playing {dub ? "Dub" : "Sub"}</p> : <p>Playing Sub (No Dub source available for this episode)</p>) }
           
           <div>
             {autoPlay && (
@@ -348,7 +356,7 @@ function VideoPlayer({
                 </button>
               </div>
             )}
-            {server == "tenshi" ? <div className="tooltip1">
+            {server == "tenshi" && dubAvailable ? <div className="tooltip1">
               <button
                 title="Change Audio"
                 onClick={() => {

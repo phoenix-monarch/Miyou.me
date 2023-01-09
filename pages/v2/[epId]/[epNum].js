@@ -19,15 +19,28 @@ import toast from "react-hot-toast";
 import Head from "next/head";
 // import Test from "../../../components/test"
 
-function WatchAnimeV1() {
+function WatchAnimeV2() {
   const router = useRouter();
   const {epId,epNum} = router.query
   const { width } = useWindowSize();
 const [dub,setDub]= useState(false)
+const [dubAvailable,setDubAvailable] =useState(true)
   const { data : epIframeData , error :epIframeError } = useSWR( router.isReady ? `/api/tenshi/getEpIframe/${epId}/${epNum}` : null)
   const {data,error} = useSWR(epIframeData  ? ( dub ? ( epIframeData.Source.Dub[0] ? `/api/tenshi/getEpisodeSources/${epId}/${epIframeData.Source.Dub[0].episodeId}/${epNum}` : null) : `/api/tenshi/getEpisodeSources/${epId}/${epIframeData.Source.Sub[0].episodeId}/${epNum}` ) : null)
  
-
+  useEffect(() => {
+    function isObjectEmpty(obj) {
+      return Object.keys(epIframeData.Source.Dub).length === 0;
+  }
+  if(isObjectEmpty){
+    setDubAvailable(false)
+  }
+  else{
+    setDubAvailable(true)
+  }
+    
+  }, [epIframeData])
+  
   if (!epIframeError && epIframeData) {
     
     // updateLocalStorage(
@@ -36,6 +49,7 @@ const [dub,setDub]= useState(false)
     //     epIframeData.mal_id,
     //     epIframeData.isDub
     //   );
+   
     <Head>
         <title>{data && epIframeData.Name }</title>
       </Head>
@@ -131,6 +145,7 @@ const [dub,setDub]= useState(false)
                       type={"mp4"}
                       previewThumbnails={data.previewThumbnails}
                       dub={dub}
+                      dubAvailable={dubAvailable}
                       setDub={setDub}
                       server="tenshi"
                       title={`${epIframeData.Name}`}
@@ -150,7 +165,7 @@ const [dub,setDub]= useState(false)
                         }}
                       >
                         <EpisodeLinks
-                          href={`/v1/${epIframeData.animeId}/${
+                          href={`/v2/${epIframeData.animeId}/${
                             parseInt(epNum) + 1
                           }`}
                           style={
@@ -215,7 +230,7 @@ const [dub,setDub]= useState(false)
                       (x, i) => (
                         <EpisodeLink
                         key={i+1}
-                          href={`/v2/${epIframeData.animeId}/${
+                          href={`/v2/${epId}/${
                             parseInt(i) + 1
                           }`}
                           style={
@@ -499,4 +514,4 @@ const Titles = styled.div`
   }
 `;
 
-export default WatchAnimeV1;
+export default WatchAnimeV2;

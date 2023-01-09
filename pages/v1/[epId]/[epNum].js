@@ -164,7 +164,8 @@ function WatchAnimeV1() {
                   {internalPlayer && (
                     <VideoPlayer
                       sources={data.sources}
-                      type={data.type}
+                      type={"hls"}
+                      server="gogoanime"
                       internalPlayer={internalPlayer}
                       setInternalPlayer={setInternalPlayer}
                       title={`${data.mal_id}EP${data.episodeNum}${data.isDub}`}
