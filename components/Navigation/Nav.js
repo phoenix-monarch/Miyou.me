@@ -27,7 +27,7 @@ function Nav() {
           <Links href="/movies">Top Movies</Links>
         </div>
       
-       {width <= 600 && (
+
           <IconContext.Provider
             value={{
               size: "1.5rem",
@@ -38,29 +38,15 @@ function Nav() {
               },
             }}
           >
-            <Button onClick={(e) => setIsActive(!isActive)}>
-              <FiSearch />
+            <button className="btn bg-transparent  md:bg-primary" onClick={(e) => setIsActive(!isActive)}>
+              <FiSearch className="md:h-4 md:w-4" />
+             <div className="hidden md:block">
              Search
-            </Button>
+             </div>
+
+            </button>
           </IconContext.Provider>
-        )  } 
-         { width > 600 && (
-          <IconContext.Provider
-            value={{
-              size: "1rem",
-              style: {
-                verticalAlign: "middle",
-                marginBottom: "0.2rem",
-                marginRight: "0.3rem",
-              },
-            }}
-          >
-            <Button onClick={(e) => setIsActive(!isActive)}>
-              <FiSearch /> 
-              Search
-            </Button>
-          </IconContext.Provider>
-        ) } 
+         
        
       </NavBar>
       {isActive && <Search isActive={isActive} setIsActive={setIsActive} />}
@@ -126,3 +112,6 @@ const NavBar = styled.nav`
 `;
 
 export default Nav;
+
+
+

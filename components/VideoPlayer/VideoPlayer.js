@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { MdPlayDisabled, MdPlayArrow } from "react-icons/md";
 import { IconContext } from "react-icons";
@@ -13,15 +13,18 @@ function VideoPlayer({
   sources,
   internalPlayer,
   setInternalPlayer,
+  previewThumbnails ,
+  dub,
+  dubAvailable,
+  setDub,
   title,
+  server,
   type,
   totalEpisodes,
   currentEpisode,
 }) {
   const { width } = useWindowSize();
   const router = useRouter();
-  // const slug = useParams().slug;
-  // const episode = useParams().episode;
   const {epId,epNum} = router.query
   let src = sources;
   const [player, setPlayer] = useState(null);
@@ -35,8 +38,12 @@ function VideoPlayer({
     localStorage.setItem("autoplay", data);
     setAutoplay(data);
   }
-
   useEffect(() => {
+    console.log(`Switched to ${dub}`);
+  }, [dub]);
+  const playerRef = useRef(null);
+  useEffect(() => {
+
     if (!localStorage.getItem("autoplay")) {
       localStorage.setItem("autoplay", false);
     } else {
@@ -73,22 +80,38 @@ function VideoPlayer({
               "settings",
               "fullscreen",
             ],
+            // previewThumbnails: previewThumbnails ? {
+            //   enabled: true,
+            //   src: previewThumbnails,
+            // }
+            // : {
+            //   enabled: false,
+            // },
+            tooltips: { controls: true, seek: true },
+        seekTime: 5,
+        invertTime: false,
+        fullscreen: { iosNative: true },
+        preload: "auto",
+        autoplay: true,
+        
     };
 
     if (type === "mp4") {
-      video.removeAttribute("crossorigin");
-      const player = new plyr(video, defaultOptions);
-      player.source = {
+      
+      // video.removeAttribute("crossorigin");
+      playerRef.current = new plyr(video, defaultOptions);
+      playerRef.current.source = {
         type: "video",
         title: "Example title",
-        sources: [
-          {
-            src: src,
-            type: "video/mp4",
-          },
-        ],
+        sources: src,
+      };
+
+      return () => {
+        // dispose of the player
+        playerRef.current.destroy();
       };
     }
+    if(type === "hls"){
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(src);
@@ -207,7 +230,8 @@ function VideoPlayer({
           });
         }
       }
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    } 
+    else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src;
       const defaultOptions = {
         captions: { active: true, update: true, language: "en" },
@@ -224,6 +248,19 @@ function VideoPlayer({
           "settings",
           "fullscreen",
         ],
+        previewThumbnails: previewThumbnails ? {
+          enabled: true,
+          src: previewThumbnails,
+        }
+        : {
+          enabled: false,
+        },
+        tooltips: { controls: true, seek: true },
+    seekTime: 5,
+    invertTime: false,
+    fullscreen: { iosNative: true },
+    preload: "auto",
+    autoplay: true,
       };
       let player = new plyr(video, defaultOptions);
       setPlayer(new plyr(video, defaultOptions));
@@ -271,15 +308,12 @@ function VideoPlayer({
       player.source = {
         type: "video",
         title: "Example title",
-        sources: [
-          {
-            src: src,
-            type: "video/mp4",
-          },
-        ],
+        sources: src,
       };
     }
-  }, []);
+  }
+  
+  }, [src]);
 
   return (
     <div
@@ -299,9 +333,11 @@ function VideoPlayer({
           }}
         >
           {internalPlayer && <p>Internal Player</p>}
+          {server == "tenshi" && (dubAvailable ? <p>Playing {dub ? "Dub" : "Sub"}</p> : <p>Playing Sub (No Dub source available for this episode)</p>) }
+          
           <div>
             {autoPlay && (
-              <div className="tooltip">
+              <div className="tooltip1">
                 <button
                   title="Disable Autoplay"
                   onClick={() => updateAutoplay(false)}
@@ -311,7 +347,7 @@ function VideoPlayer({
               </div>
             )}
             {!autoPlay && (
-              <div className="tooltip">
+              <div className="tooltip1">
                 <button
                   title="Enable Autoplay"
                   onClick={() => updateAutoplay(true)}
@@ -320,19 +356,35 @@ function VideoPlayer({
                 </button>
               </div>
             )}
-            <div className="tooltip">
+            {server == "tenshi" && dubAvailable ? <div className="tooltip1">
               <button
-                title="Change Server"
+                title="Change Audio"
                 onClick={() => {
-                  toast.success("Swtitched to External Player", {
+                  toast.success(dub ? "Switched To Sub" : "Switched To Dub", {
                     position: "top-center",
                   });
-                  setInternalPlayer(!internalPlayer);
+                  setDub(!dub);
                 }}
               >
                 <HiOutlineSwitchHorizontal />
               </button>
-            </div>
+            </div> : null}
+            {server == "gogoanime" && 
+            <div className="tooltip1">
+            <button
+              title="Change Server"
+              onClick={() => {
+                toast.success("Swtitched to External Player", {
+                  position: "top-center",
+                });
+                setInternalPlayer(!internalPlayer);
+              }}
+            >
+              <HiOutlineSwitchHorizontal />
+            </button>
+          </div>
+            }
+            
             
           </div>
         </IconContext.Provider>
@@ -372,13 +424,13 @@ const Conttainer = styled.div`
     cursor: pointer;
   }
 
-  .tooltip {
+  .tooltip1 {
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
   }
 
-  .tooltip .tooltiptext {
+  .tooltip1 .tooltiptext {
     visibility: hidden;
     width: 120px;
     background-color: rgba(0, 0, 0, 0.8);
@@ -395,7 +447,7 @@ const Conttainer = styled.div`
     transition: opacity 0.2s;
   }
 
-  .tooltip .tooltiptext::after {
+  .tooltip1 .tooltiptext::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -406,7 +458,7 @@ const Conttainer = styled.div`
     border-color: black transparent transparent transparent;
   }
 
-  .tooltip:hover .tooltiptext {
+  .tooltip1:hover .tooltiptext {
     visibility: visible;
     opacity: 1;
   }

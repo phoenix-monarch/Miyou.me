@@ -17,61 +17,56 @@ import VideoPlayer from "../../../components/VideoPlayer/VideoPlayer";
 import { cacheFetchRequest } from "../../../hooks/cacheRequest";
 import toast from "react-hot-toast";
 import Head from "next/head";
+// import Test from "../../../components/test"
 
-function WatchAnimeV1() {
+function WatchAnimeV2() {
   const router = useRouter();
   const {epId,epNum} = router.query
   const { width } = useWindowSize();
-  const [fullScreen, setFullScreen] = useState(false);
-  const [internalPlayer, setInternalPlayer] = useState(true);
-
-  const { data , error } = useSWR( router.isReady ? [`${process.env.NEXT_PUBLIC_BACKEND_URL}api/getmixlinks?id=${epId}&ep=${epNum}`,`play${epId}&${epNum}`] : null, ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
-  
-  function toTitleCase(str) {
-    let titleCaseStr = str.replace(/-/g, ' ').replace(/\b\w/g, function(txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-    if (titleCaseStr.endsWith("(Dub)")) {
-      titleCaseStr = titleCaseStr.slice(0, -5) + " (Dub)";
-    }
-    return titleCaseStr;
+const [dub,setDub]= useState(false)
+const [dubAvailable,setDubAvailable] =useState(true)
+  const { data : epIframeData , error :epIframeError } = useSWR( router.isReady ? `/api/tenshi/getEpIframe/${epId}/${epNum}` : null)
+  const {data,error} = useSWR(epIframeData  ? ( dub ? ( epIframeData.Source.Dub[0] ? `/api/tenshi/getEpisodeSources/${epId}/${epIframeData.Source.Dub[0].episodeId}/${epNum}` : null) : `/api/tenshi/getEpisodeSources/${epId}/${epIframeData.Source.Sub[0].episodeId}/${epNum}` ) : null)
+ 
+  useEffect(() => {
+    function isObjectEmpty(obj) {
+      return Object.keys(epIframeData.Source.Dub).length === 0;
   }
-  
-  if (!error && data) {
-    updateLocalStorage(
-      data.animeId,
-      data.episodeNum,
-      data.mal_id,
-      data.isDub
-    );
+  if(isObjectEmpty){
+    setDubAvailable(false)
+  }
+  else{
+    setDubAvailable(true)
+  }
     
+  }, [epIframeData])
+  
+  if (!epIframeError && epIframeData) {
+    
+    // updateLocalStorage(
+    //     epIframeData.animeId,
+    //     epIframeData.episodeNum,
+    //     epIframeData.mal_id,
+    //     epIframeData.isDub
+    //   );
+   
     <Head>
-        <title>{router.isReady ? `${toTitleCase(epId)}  EP-${epNum} - Miyou` : null}</title>
+        <title>{data && epIframeData.Name }</title>
       </Head>
   }
  
-  function fullScreenHandler(e) {
-    setFullScreen(!fullScreen);
-    let video = document.getElementById("video");
-
-    if (!document.fullscreenElement) {
-      video.requestFullscreen();
-      window.screen.orientation.lock("landscape-primary");
-    } else {
-      document.exitFullscreen();
-    }
-  }
+ 
 
   function updateLocalStorage(animeId, epNum, malId, isDub) {
     if(typeof window !== "undefined"){
     if (localStorage.getItem("Watching")) {
       let data = localStorage.getItem("Watching");
       data = JSON.parse(data);
-      let index = data.findIndex((i) => i.animeId === animeId);
+      let index = epIframeData.findIndex((i) => i.animeId === animeId);
       if (index !== -1) {
-        data.splice(index, 1);
+        epIframeData.splice(index, 1);
       }
-      data.unshift({
+      epIframeData.unshift({
         animeId,
         epNum,
         malId,
@@ -81,7 +76,7 @@ function WatchAnimeV1() {
       localStorage.setItem("Watching", data);
     } else {
       let data = [];
-      data.push({
+      epIframeData.push({
         animeId,
         epNum,
         malId,
@@ -93,59 +88,41 @@ function WatchAnimeV1() {
     }
   }
   }
+  // fetch("https://suzaku.tenshi.moe/1dd5ed64586e51ac?download_token=a196839bfb8263de192a3a38832843c634cf77949c3384fe0947ce1e48d40195", {
+  //   "headers": {
+  //     "accept": "*/*",
+  //     "accept-language": "en-US,en;q=0.9",
+  //     "if-modified-since": "Sat, 29 Oct 2022 18:39:35 GMT",
+  //     "if-none-match": "\"635d7367-213152e7\"",
+  //     "range": "bytes=0-15858",
+  //     "sec-ch-ua": "\"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"108\", \"Google Chrome\";v=\"108\"",
+  //     "sec-ch-ua-mobile": "?0",
+  //     "sec-ch-ua-platform": "\"Windows\"",
+  //     "sec-fetch-dest": "video",
+  //     "sec-fetch-mode": "no-cors",
+  //     "sec-fetch-site": "same-site"
+  //   },
+  //   "referrer": "https://tenshi.moe/",
+  //   "referrerPolicy": "strict-origin-when-cross-origin",
+  //   "method": "GET",
+  //   "mode": "cors",
+  //   "credentials": "include"
+  // });
 
+// s
   return (
     <div>
-      {!data && <WatchAnimeSkeleton />}
-      {data && (
+      {!epIframeData && <WatchAnimeSkeleton />}
+      {epIframeData && data && (
         <Wrapper>
-          {data  && data.gogoLink !== "" && (
+          {epIframeData   && (
             <div>
               <div>
                 <Titles>
                   <p>
-                    <span>{router.isReady ? `${toTitleCase(epId)} ` : null}</span>
-                    {` Episode - ${epNum}`}
+                    <span>{epIframeData.Name}</span>
+                    
                   </p>
-                  {width <= 600 && (
-                    <IconContext.Provider
-                      value={{
-                        size: "1.8rem",
-                        style: {
-                          verticalAlign: "middle",
-                        },
-                      }}
-                    >
-                      <a
-                        href={data.downloadLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <BiArrowToBottom />
-                      </a>
-                    </IconContext.Provider>
-                  )}
-                  {width > 600 && (
-                    <IconContext.Provider
-                      value={{
-                        size: "1.2rem",
-                        style: {
-                          verticalAlign: "middle",
-                          marginBottom: "0.2rem",
-                          marginLeft: "0.3rem",
-                        },
-                      }}
-                    >
-                      <a
-                        href={data.downloadLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Download
-                        <BiArrowToBottom />
-                      </a>
-                    </IconContext.Provider>
-                  )}
                 </Titles>
                 <p
                   style={{
@@ -155,90 +132,30 @@ function WatchAnimeV1() {
                   }}
                 >
                   If the video player doesn&apos;t load or if blank refresh the page
-                  or use the external server
                 </p>
               </div>
 
               <VideoPlayerWrapper>
                 <div>
-                  {internalPlayer && (
+                  
+                
+                    <div>
                     <VideoPlayer
                       sources={data.sources}
-                      type={"hls"}
-                      server="gogoanime"
-                      internalPlayer={internalPlayer}
-                      setInternalPlayer={setInternalPlayer}
-                      title={`${data.mal_id}EP${data.episodeNum}${data.isDub}`}
-                      totalEpisodes={data.totalEpisodes}
-                      currentEpisode={data.episodeNum}
+                      type={"mp4"}
+                      previewThumbnails={data.previewThumbnails}
+                      dub={dub}
+                      dubAvailable={dubAvailable}
+                      setDub={setDub}
+                      server="tenshi"
+                      title={`${epIframeData.Name}`}
+                      totalEpisodes={epIframeData.TotalEp}
+                      currentEpisode={epNum}
                     />
-                  )}
-                  {!internalPlayer && (
-                    <div>
-                      <Container>
-                        <IconContext.Provider
-                          value={{
-                            size: "1.5rem",
-                            color: "white",
-                            style: {
-                              verticalAlign: "middle",
-                            },
-                          }}
-                        >
-                          <p>External Player (Contain Ads)</p>
-                          <div>
-                            <div className="tooltip">
-                              <button
-                                onClick={() => {
-                                  toast.success(
-                                    "Swtitched to Internal Player",
-                                    {
-                                      position: "top-center",
-                                    }
-                                  );
-                                  setInternalPlayer(!internalPlayer);
-                                }}
-                              >
-                                <HiOutlineSwitchHorizontal />
-                              </button>
-                              <span className="tooltiptext">Change Server</span>
-                            </div>
-                          </div>
-                        </IconContext.Provider>
-                      </Container>
-                      <IframeWrapper>
-                        <iframe
-                          id="video"
-                          title={router.isReady ? toTitleCase(epId) : null}
-                          src={data.gogoLink}
-                          allowfullscreen="true"
-                          frameborder="0"
-                          marginwidth="0"
-                          marginheight="0"
-                        ></iframe>
-                        {width <= 600 && (
-                          <div>
-                            <IconContext.Provider
-                              value={{
-                                size: "1.8rem",
-                                color: "white",
-                                style: {
-                                  verticalAlign: "middle",
-                                  cursor: "pointer",
-                                },
-                              }}
-                            >
-                              <BiFullscreen
-                                onClick={(e) => fullScreenHandler(e)}
-                              />
-                            </IconContext.Provider>
-                          </div>
-                        )}
-                      </IframeWrapper>
                     </div>
-                  )}
+                  
                   <EpisodeButtons>
-                    {width <= 600 && (
+                   
                       <IconContext.Provider
                         value={{
                           size: "1.8rem",
@@ -248,67 +165,12 @@ function WatchAnimeV1() {
                         }}
                       >
                         <EpisodeLinks
-                          href={`/v1/${data.animeId}/${
-                            parseInt(epNum) - 1
-                          }`}
-                          style={
-                            parseInt(epNum) === 1
-                              ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                              : {}
-                          }
-                        >
-                          <HiArrowSmLeft />
-                        </EpisodeLinks>
-                      </IconContext.Provider>
-                    )}
-                    {width > 600 && (
-                      <IconContext.Provider
-                        value={{
-                          size: "1.3rem",
-                          style: {
-                            verticalAlign: "middle",
-                            marginBottom: "0.2rem",
-                            marginRight: "0.3rem",
-                          },
-                        }}
-                      >
-                        <EpisodeLinks
-                          href={`/v1/${data.animeId}/${
-                            parseInt(epNum) - 1
-                          }`}
-                          style={
-                            parseInt(epNum) === 1
-                              ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                              : {}
-                          }
-                        >
-                          <HiArrowSmLeft />
-                          Previous
-                        </EpisodeLinks>
-                      </IconContext.Provider>
-                    )}
-                    {width <= 600 && (
-                      <IconContext.Provider
-                        value={{
-                          size: "1.8rem",
-                          style: {
-                            verticalAlign: "middle",
-                          },
-                        }}
-                      >
-                        <EpisodeLinks
-                          href={`/v1/${data.animeId}/${
+                          href={`/v2/${epIframeData.animeId}/${
                             parseInt(epNum) + 1
                           }`}
                           style={
                             parseInt(epNum) ===
-                            parseInt(data.totalEpisodes)
+                            parseInt(epIframeData.TotalEp)
                               ? {
                                   pointerEvents: "none",
                                   color: "rgba(255,255,255, 0.2)",
@@ -316,11 +178,15 @@ function WatchAnimeV1() {
                               : {}
                           }
                         >
+
                           <HiArrowSmRight />
+                         <div className="hidden md:block">
+                           Previous
+                          </div>
                         </EpisodeLinks>
                       </IconContext.Provider>
-                    )}
-                    {width > 600 && (
+                    
+                 
                       <IconContext.Provider
                         value={{
                           size: "1.3rem",
@@ -332,12 +198,13 @@ function WatchAnimeV1() {
                         }}
                       >
                         <EpisodeLinks
-                          href={`/v1/${data.animeId}/${
+                        className="flex justify-center items-center"
+                          href={`/v1/${epIframeData.animeId}/${
                             parseInt(epNum) + 1
                           }`}
                           style={
                             parseInt(epNum) ===
-                            parseInt(data.totalEpisodes)
+                            parseInt(epIframeData.TotalEp)
                               ? {
                                   pointerEvents: "none",
                                   color: "rgba(255,255,255, 0.2)",
@@ -345,21 +212,25 @@ function WatchAnimeV1() {
                               : {}
                           }
                         >
+                          <div className="hidden md:block">
+
                           Next
+                          </div>
+
                           <HiArrowSmRight />
                         </EpisodeLinks>
                       </IconContext.Provider>
-                    )}
+                    
                   </EpisodeButtons>
                 </div>
                 <EpisodesWrapper>
                   <p>Episodes</p>
                   <Episodes>
-                    {[...Array(parseInt(data.totalEpisodes))].map(
+                    {[...Array(parseInt(epIframeData.TotalEp))].map(
                       (x, i) => (
                         <EpisodeLink
                         key={i+1}
-                          href={`/v1/${data.animeId}/${
+                          href={`/v2/${epId}/${
                             parseInt(i) + 1
                           }`}
                           style={
@@ -643,4 +514,4 @@ const Titles = styled.div`
   }
 `;
 
-export default WatchAnimeV1;
+export default WatchAnimeV2;
