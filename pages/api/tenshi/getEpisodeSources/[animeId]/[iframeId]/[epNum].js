@@ -18,8 +18,8 @@ const scrapeSources = async function(animeId , epNum,iframeId) {
     const sources = [];
 $('video source').each((i, elem) => {
   sources.push({
-    src: "https://3000-reyangurjar2010-miyoume-gfxxr2cko7m.ws-us81.gitpod.io/api/suzaki/" +$(elem).attr('src').split('/').pop(),
-    type: $(elem).attr('type'),
+    src: process.env.NEXT_PUBLIC_URL + "/api/suzaki/" + $(elem).attr('src').split('/').pop(),
+    type: $(elem).attr('type'),  
     size: $(elem).attr('size'),
   });
 });
