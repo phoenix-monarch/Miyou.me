@@ -19,7 +19,7 @@ module.exports =  {
     return [
       {
         source: '/api/suzaki/:path*',
-        destination: 'https://suzaku.tenshi.moe/:path*',
+        destination: 'https://seiryuu.tenshi.moe/:path*',
         permanent: true,
       },
     ]
