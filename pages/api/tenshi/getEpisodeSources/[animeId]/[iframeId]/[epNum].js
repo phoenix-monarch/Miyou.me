@@ -21,7 +21,7 @@ const scrapeSources = async function(animeId , epNum,iframeId) {
     const sources = [];
 $('video source').each((i, elem) => {
   sources.push({
-    src: process.env.NEXT_PUBLIC_URL + "/api/suzaki/" + $(elem).attr('src').split('/').pop(),
+    src: process.env.NEXT_PUBLIC_URL + "api/suzaki/" + $(elem).attr('src').split('/').pop(),
     type: $(elem).attr('type'),  
     size: $(elem).attr('size'),
   });
