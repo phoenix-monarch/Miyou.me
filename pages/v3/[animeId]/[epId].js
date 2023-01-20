@@ -17,92 +17,64 @@ import VideoPlayer from "../../../components/VideoPlayer/VideoPlayer";
 import { cacheFetchRequest } from "../../../hooks/cacheRequest";
 import toast from "react-hot-toast";
 import Head from "next/head";
-// import Test from "../../../components/test"
 
-function WatchAnimeV2() {
+function WatchAnimeV3() {
   const router = useRouter();
-  const {epId,epNum} = router.query
-  const { width } = useWindowSize();
+  const {animeId,epId} = router.query
 const [dub,setDub]= useState(false)
-const [dubAvailable,setDubAvailable] =useState(true)
-  const { data : epIframeData , error :epIframeError } = useSWR( router.isReady ? `/api/tenshi/getEpIframe/${epId}/${epNum}` : null)
-  const {data,error} = useSWR(epIframeData  ? ( dub ? ( epIframeData.Source.Dub[0] ? `/api/tenshi/getEpisodeSources/${epId}/${epIframeData.Source.Dub[0].episodeId}/${epNum}` : null) : `/api/tenshi/getEpisodeSources/${epId}/${epIframeData.Source.Sub[0].episodeId}/${epNum}` ) : null)
+const [thumbnailUrl,setThumbnailUrl]= useState(null)
+const [dubAvailable,setDubAvailable] =useState(false)
+  const { data : epInfoData , error :epInfoError } = useSWR( router.isReady ? `/api/zoro/getEpisodesInfo/${animeId.split("-").pop()}` : null)
+//   get dubAvailable or not by api 
+  const {data: isDubAvailableData,error:isDubAvailableError} = useSWR(router.isReady? `/api/zoro/dubAvailable/${epId}` : null)
+  const {data,error} = useSWR(router.isReady ? ( dub ? ( dubAvailable ? `/api/zoro/getEpisodeSources/${animeId}/dub/${epId}` : null) : `/api/zoro/getEpisodeSources/${animeId}/sub/${epId}` ) : null)
  
   useEffect(() => {
-    function isObjectEmpty(obj) {
-      return Object.keys(obj).length === 0;
-  }
-  if(epIframeData !== undefined){
-    if(isObjectEmpty(epIframeData.Source.Dub)){
-      setDubAvailable(false)
+    if(isDubAvailableData){
+      setDubAvailable(isDubAvailableData.dubAvailable)
+      console.log(`Set dub as ${isDubAvailableData.dubAvailable}`)
     }
-    else{
-      setDubAvailable(true)
+  }, [isDubAvailableData])
+  useEffect(() => {
+    if(data){
+     
+      let thumbnailUrl = data.subtitles.find((subtitle) => subtitle.lang === "Thumbnails").url
+      console.log("Thumbnails Url",thumbnailUrl)
+      setThumbnailUrl(thumbnailUrl)
     }
+  },[data])
+  
+  function convertZoroAnimeIdToTitle(animeId){
+    
+let parts = animeId.split("-");
+parts.pop(); // remove the last element
+let result = parts.join(" ");
+result = result.split(" ")
+    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+    .join(" ");
+    return result;
   }
-  
+
+  if (!epInfoError && epInfoData) {
     
-  }, [epIframeData])
-  
-  if (!epIframeError && epIframeData) {
-    
-    // updateLocalStorage(
-    //     epIframeData.animeId,
-    //     epIframeData.episodeNum,
-    //     epIframeData.mal_id,
-    //     epIframeData.isDub
-    //   );
-   
     <Head>
-        <title>{data && epIframeData.Name }</title>
+        <title>{router.isReady && convertZoroAnimeIdToTitle(animeId) }</title>
       </Head>
   }
  
  
 
-  function updateLocalStorage(animeId, epNum, malId, isDub) {
-    if(typeof window !== "undefined"){
-    if (localStorage.getItem("Watching")) {
-      let data = localStorage.getItem("Watching");
-      data = JSON.parse(data);
-      let index = epIframeData.findIndex((i) => i.animeId === animeId);
-      if (index !== -1) {
-        epIframeData.splice(index, 1);
-      }
-      epIframeData.unshift({
-        animeId,
-        epNum,
-        malId,
-        isDub,
-      });
-      data = JSON.stringify(data);
-      localStorage.setItem("Watching", data);
-    } else {
-      let data = [];
-      epIframeData.push({
-        animeId,
-        epNum,
-        malId,
-        isDub,
-      });
-      data = JSON.stringify(data);
-      
-      localStorage.setItem("Watching", data);
-    }
-  }
-  }
-
   return (
     <div>
-      {!epIframeData && <WatchAnimeSkeleton />}
-      {epIframeData && data && (
+      {!data && <WatchAnimeSkeleton />}
+      {data && epInfoData && (
         <Wrapper>
-          {epIframeData   && (
+          {data   && (
             <div>
               <div>
                 <Titles>
                   <p>
-                    <span>{epIframeData.Name}</span>
+                    <span>{router.isReady && convertZoroAnimeIdToTitle(animeId) }</span>
                     
                   </p>
                 </Titles>
@@ -123,16 +95,18 @@ const [dubAvailable,setDubAvailable] =useState(true)
                 
                     <div>
                     <VideoPlayer
-                      sources={data.sources}
-                      type={"mp4"}
-                      previewThumbnails={data.previewThumbnails}
+                      sources={"https://cors.proxy.consumet.org/" + data.sources[data.sources.length - 1].url}
+                      // sources={"https://content.jwplatform.com/manifests/vM7nH0Kl.m3u8"}
+                      type={"hls"}
+                      previewThumbnails={data.subtitles.find((subtitle) => subtitle.lang === "Thumbnails").url}
                       dub={dub}
                       dubAvailable={dubAvailable}
                       setDub={setDub}
-                      server="tenshi"
-                      title={`${epIframeData.Name}`}
-                      totalEpisodes={epIframeData.TotalEp}
-                      currentEpisode={epNum}
+                      server="zoro"
+                      title={convertZoroAnimeIdToTitle(animeId)}
+                      totalEpisodes={epInfoData.totalEp}
+                      currentEpisode={epInfoData.episodes.find((episode) => episode.id === epId).epNum}
+                      subtitles={data.subtitles.filter((subtitle) => subtitle.lang !== "Thumbnails")}
                     />
                     </div>
                   
@@ -146,7 +120,7 @@ const [dubAvailable,setDubAvailable] =useState(true)
                           },
                         }}
                       >
-                        <EpisodeLinks
+                        {/* <EpisodeLinks
                           href={`/v2/${epIframeData.animeId}/${
                             parseInt(epNum) + 1
                           }`}
@@ -165,7 +139,7 @@ const [dubAvailable,setDubAvailable] =useState(true)
                          <div className="hidden md:block">
                            Previous
                           </div>
-                        </EpisodeLinks>
+                        </EpisodeLinks> */}
                       </IconContext.Provider>
                     
                  
@@ -179,7 +153,7 @@ const [dubAvailable,setDubAvailable] =useState(true)
                           },
                         }}
                       >
-                        <EpisodeLinks
+                        {/* <EpisodeLinks
                         className="flex justify-center items-center"
                           href={`/v1/${epIframeData.animeId}/${
                             parseInt(epNum) + 1
@@ -200,7 +174,7 @@ const [dubAvailable,setDubAvailable] =useState(true)
                           </div>
 
                           <HiArrowSmRight />
-                        </EpisodeLinks>
+                        </EpisodeLinks> */}
                       </IconContext.Provider>
                     
                   </EpisodeButtons>
@@ -208,24 +182,25 @@ const [dubAvailable,setDubAvailable] =useState(true)
                 <EpisodesWrapper>
                   <p>Episodes</p>
                   <Episodes>
-                    {[...Array(parseInt(epIframeData.TotalEp))].map(
-                      (x, i) => (
-                        <EpisodeLink
-                        key={i+1}
-                          href={`/v2/${epId}/${
-                            parseInt(i) + 1
-                          }`}
-                          style={
-                            i + 1 <= parseInt(epNum)
-                              ? { backgroundColor: "#7676ff" }
-                              : {}
-                          }
-                        >
-                          {i + 1}
-                        </EpisodeLink>
-                      )
-                    )}
-                  </Episodes>
+              {
+                epInfoData.episodes.map((item, index) => (
+                  <EpisodeLink
+                  key={item.epNum}
+                  className="flex justify-center items-center"
+                    href={`/v3/${epInfoData.zoroAnimeId}/${item.id}`}
+          
+                    style={
+                      item.epNum <= parseInt(epInfoData.episodes.find((episode) => episode.id === epId).epNum)
+                        ? { backgroundColor: "#7676ff" }
+                        : {}
+                    }
+                  >
+                    &nbsp;{item.epNum}
+                  </EpisodeLink>
+                ))
+                }
+             
+            </Episodes>
                 </EpisodesWrapper>
               </VideoPlayerWrapper>
             </div>
@@ -496,4 +471,4 @@ const Titles = styled.div`
   }
 `;
 
-export default WatchAnimeV2;
+export default WatchAnimeV3;

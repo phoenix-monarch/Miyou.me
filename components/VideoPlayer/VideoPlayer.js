@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import useWindowSize from "../../hooks/useWindowSize";
 function VideoPlayer({
   sources,
+  subtitles,
   internalPlayer,
   setInternalPlayer,
   previewThumbnails ,
@@ -23,11 +24,10 @@ function VideoPlayer({
   totalEpisodes,
   currentEpisode,
 }) {
+  const router = useRouter()
   const { width } = useWindowSize();
-  const router = useRouter();
   const {epId,epNum} = router.query
   let src = sources;
-  const [player, setPlayer] = useState(null);
   const [autoPlay, setAutoplay] = useState(false);
 
 
@@ -38,11 +38,13 @@ function VideoPlayer({
     localStorage.setItem("autoplay", data);
     setAutoplay(data);
   }
+  
   useEffect(() => {
     console.log(`Switched to ${dub}`);
   }, [dub]);
   const playerRef = useRef(null);
   useEffect(() => {
+    console.log(previewThumbnails)
 
     if (!localStorage.getItem("autoplay")) {
       localStorage.setItem("autoplay", false);
@@ -80,20 +82,31 @@ function VideoPlayer({
               "settings",
               "fullscreen",
             ],
-            // previewThumbnails: previewThumbnails ? {
-            //   enabled: true,
-            //   src: previewThumbnails,
-            // }
-            // : {
-            //   enabled: false,
-            // },
+            previewThumbnails: previewThumbnails ? {
+              enabled: true,
+              src: previewThumbnails,
+            }
+            : {
+              enabled: false,
+            },
             tooltips: { controls: true, seek: true },
         seekTime: 5,
         invertTime: false,
         fullscreen: { iosNative: true },
-        preload: "auto",
-        autoplay: true,
-        
+        // preload: "auto",
+        // autoplay: true,
+        tracks: subtitles.map((i,e) => {
+          return {
+            kind: 'captions',
+            label: e.lang,
+            src: e.url,
+            default :
+            subtitles[i].lang == "English" ? 
+            true
+          :
+          false
+        }
+        })
     };
 
     if (type === "mp4") {
@@ -106,10 +119,6 @@ function VideoPlayer({
         sources: src,
       };
 
-      return () => {
-        // dispose of the player
-        playerRef.current.destroy();
-      };
     }
     if(type === "hls"){
     if (Hls.isSupported()) {
@@ -137,7 +146,6 @@ function VideoPlayer({
           }
         });
         let player = new plyr(video, defaultOptions);
-        setPlayer(new plyr(video, defaultOptions));
         let plyer;
       
         player.on("ready", () => {
@@ -259,11 +267,11 @@ function VideoPlayer({
     seekTime: 5,
     invertTime: false,
     fullscreen: { iosNative: true },
-    preload: "auto",
-    autoplay: true,
+    // preload: "auto",
+    // autoplay: true,
       };
       let player = new plyr(video, defaultOptions);
-      setPlayer(new plyr(video, defaultOptions));
+
       let plyer;
 
       player.on("ready", () => {
@@ -312,8 +320,20 @@ function VideoPlayer({
       };
     }
   }
-  
+  // hls.destroy()
   }, [src]);
+  // useEffect(() => {
+  //   // Reset the state here
+  //   if (hasRendered) {
+  //     // Do something when the route changes
+  //     hls.stopLoad()
+  //     console.log(router.pathname);
+  //   } else {
+  //     setHasRendered(true);
+  //   }
+  //   setDub(false)
+  // }, [router.pathname])
+  
 
   return (
     <div
@@ -334,6 +354,7 @@ function VideoPlayer({
         >
           {internalPlayer && <p>Internal Player</p>}
           {server == "tenshi" && (dubAvailable ? <p>Playing {dub ? "Dub" : "Sub"}</p> : <p>Playing Sub (No Dub source available for this episode)</p>) }
+          {server == "zoro" && (dubAvailable ? <p>Playing {dub ? "Dub" : "Sub"}</p> : <p>Playing Sub (No Dub source available for this episode)</p>) }
           
           <div>
             {autoPlay && (
@@ -356,7 +377,7 @@ function VideoPlayer({
                 </button>
               </div>
             )}
-            {server == "tenshi" && dubAvailable ? <div className="tooltip1">
+            {server == "tenshi" && dubAvailable && <div className="tooltip1">
               <button
                 title="Change Audio"
                 onClick={() => {
@@ -368,7 +389,20 @@ function VideoPlayer({
               >
                 <HiOutlineSwitchHorizontal />
               </button>
-            </div> : null}
+            </div> }
+            {server == "zoro" && dubAvailable && <div className="tooltip1">
+              <button
+                title="Change Audio"
+                onClick={() => {
+                  toast.success(dub ? "Switched To Sub" : "Switched To Dub", {
+                    position: "top-center",
+                  });
+                  setDub(!dub);
+                }}
+              >
+                <HiOutlineSwitchHorizontal />
+              </button>
+            </div> }
             {server == "gogoanime" && 
             <div className="tooltip1">
             <button

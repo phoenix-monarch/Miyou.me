@@ -12,17 +12,18 @@ module.exports =  {
       {
         source: '/api/tenshiUrl/:path*',
         destination: 'https://tenshi.moe/:path*',
-      }
-    ]
-  },
-    async redirects() {
-    return [
+      },
       {
         source: '/api/suzaki/:path*',
         destination: 'https://suzaku.tenshi.moe/:path*',
-        permanent: true,
+        // permanent: true,
       },
     ]
   },
+  //   async redirects() {
+  //   return [
+      
+  //   ]
+  // },
 
 }

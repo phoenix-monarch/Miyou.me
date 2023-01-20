@@ -5,9 +5,24 @@ import "../styles/global.css"
 import { SWRConfig } from 'swr';
 import "react-loading-skeleton/dist/skeleton.css";
 import Head from "next/head"
-
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
+  useEffect(() => {
+    // console.log("hey bro")
+    const excludedPaths = ["/v1/[epId]/[epNum]", "/v2/epId/epNum", "/v3/[animeId]/[epId]"];
+    if(excludedPaths.includes(router.pathname)) return;
+    if(typeof window!== "undefined"){
+      if(typeof window.hls !== "undefined" && typeof window.hls.destroy !== "undefined"){
+        window.hls.destroy();
+        console.log("Destroyed with pathname: ", router.pathname)
+      }
+    }
+  },[router.pathname])
+
   return <>
+
   <SWRConfig value={ {
      revalidateOnFocus: false,
      revalidateOnReconnect: false,
