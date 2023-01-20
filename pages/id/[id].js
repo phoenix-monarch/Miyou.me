@@ -20,95 +20,12 @@ function MalAnimeDetails() {
     ([query, variables,keyCache]) => cacheGraphQlFetch(query, variables,keyCache)
   )
 
-  // const malSyncData = {
-  //   "createdAt": "2020-10-12T15:37:58.000Z",
-  //   "updatedAt": "2022-11-30T14:22:38.000Z",
-  //   "checkedAt": "2022-11-30T14:22:38.000Z",
-  //   "id": 1,
-  //   "type": "anime",
-  //   "title": "Cowboy Bebop",
-  //   "altTitle": [
-  //   "Cowboy Bebop",
-  //   "カウボーイビバップ"
-  //   ],
-  //   "url": "https://myanimelist.net/anime/1/Cowboy_Bebop",
-  //   "image": "https://cdn.myanimelist.net/images/anime/4/19644.jpg",
-  //   "category": "TV",
-  //   "hentai": false,
-  //   "externalLinks": [],
-  //   "legalLinks": [],
-  //   "deletedAt": null,
-  //   "anidbId": 23,
-  //   "Pages": {
-  //   "9anime": {},
-  //   "Gogoanime": {},
-  //   "Tenshi": {
-  //   "9ronp4b4": {
-  //   "createdAt": "2022-07-26T16:01:19.378Z",
-  //   "updatedAt": "2022-07-26T16:20:00.000Z",
-  //   "checkedAt": "2022-07-26T16:01:19.000Z",
-  //   "id": 41644,
-  //   "identifier": "9ronp4b4",
-  //   "type": "anime",
-  //   "page": "Tenshi",
-  //   "title": "Cowboy Bebop",
-  //   "url": "https://tenshi.moe/anime/9ronp4b4",
-  //   "image": "https://tenshi.moe/images/anime/vfqbhdumt-6118d71118ca6371064077.jpg",
-  //   "hentai": false,
-  //   "sticky": false,
-  //   "active": true,
-  //   "actorId": null,
-  //   "malId": 1,
-  //   "aniId": 1,
-  //   "deletedAt": null
-  //   }
-  //   },
-  //   "animepahe": {
-  //   "271": {
-  //   "identifier": "271",
-  //   "malId": 1,
-  //   "type": "anime",
-  //   "page": "animepahe",
-  //   "title": "Cowboy Bebop",
-  //   "url": "https://animepahe.com/a/271"
-  //   }
-  //   },
-  //   "AniMixPlay": {
-  //   "1": {
-  //   "identifier": "1",
-  //   "malId": 1,
-  //   "type": "anime",
-  //   "page": "AniMixPlay",
-  //   "title": "Cowboy Bebop",
-  //   "url": "https://animixplay.to/anime/1"
-  //   }
-  //   },
-  //   "YugenAnime": {
-  //   "640": {
-  //   "identifier": "640",
-  //   "malId": 1,
-  //   "type": "anime",
-  //   "page": "YugenAnime",
-  //   "title": "Cowboy Bebop",
-  //   "url": "https://yugen.to/anime/640/cowboy-bebop/"
-  //   }
-  //   },
-  //   "Zoro": {
-  //   "27": {
-  //   "identifier": "27",
-  //   "malId": 1,
-  //   "type": "anime",
-  //   "page": "Zoro",
-  //   "title": "Cowboy Bebop",
-  //   "url": "https://zoro.to/cowboy-bebop-27"
-  //   }
-  //   }
-  //   }
-  //   }
+  
   // const {data : malSyncData,error : malSyncDataError ,isLoading : malSyncDataLoading} = useSWR( router.isReady ? [`https://raw.githubusercontent.com/MALSync/MAL-Sync-Backup/master/data/myanimelist/anime/${id}.json`,`malSync${id}`] : null, ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
-  const {data : malSyncData,error : malSyncDataError} = useSWR(router.isReady ? `https://raw.githubusercontent.com/MALSync/MAL-Sync-Backup/master/data/myanimelist/anime/${id}.json`  : null)
+  const {data : malSyncData,error : malSyncDataError} = useSWR(router.isReady ? `https://cors.proxy.consumet.org/https://api.malsync.moe/mal/anime/${id}`  : null)
   const {data : gogoEpisodeInfo ,error: gogoEpisodeInfoError,isLoading : gogoEpisodeInfoLoading} = useSWR(router.isReady && server == "gogoanime" ? `/api/gogoanime/getEpisodeInfo/${id}` : null )
-  const {data : tenshiEpisodeInfo ,error: tenshiEpisodeInfoError,isLoading : tenshiEpisodeInfoLoading} = useSWR(router.isReady && server == "tenshi" && malSyncData !== undefined ? `/api/tenshi/getEpInfo/${Object.keys(malSyncData.Pages.Tenshi)[0]}` : null )
+  const {data : tenshiEpisodeInfo ,error: tenshiEpisodeInfoError,isLoading : tenshiEpisodeInfoLoading} = useSWR(router.isReady && server == "tenshi" && malSyncData !== undefined ? `/api/tenshi/getEpInfo/${Object.keys(malSyncData.Sites.Tenshi)[0]}` : null )
+  const {data : zoroEpisodeInfo ,error: zoroEpisodeInfoError,isLoading : zoroEpisodeInfoLoading} = useSWR(router.isReady && server == "zoro" && malSyncData !== undefined ? `/api/zoro/getEpisodesInfo/${Object.keys(malSyncData.Sites.Zoro)[0]}` : null )
   
   const { width } = useWindowSize();
   const [expanded, setExpanded] = useState(false);
@@ -120,8 +37,12 @@ function MalAnimeDetails() {
   useEffect(() => {
     if(malSyncData ){
       console.log("function called")
-      if(malSyncData.Pages.Tenshi){
-        setServer("tenshi")
+      // if(malSyncData.Sites.Tenshi){
+      //   setServer("tenshi")
+      //   console.log(server)
+      // }
+      if(malSyncData.Sites.Zoro){
+        setServer("zoro")
         console.log(server)
       }
       else{
@@ -143,7 +64,7 @@ function MalAnimeDetails() {
     )
   }
 
-  if(anilistResponseLoading || gogoEpisodeInfoLoading || tenshiEpisodeInfoLoading  ){
+  if(anilistResponseLoading || gogoEpisodeInfoLoading || tenshiEpisodeInfoLoading || zoroEpisodeInfoLoading  ){
     return(<AnimeDetailsSkeleton /> )
   }
   return (
@@ -167,7 +88,12 @@ function MalAnimeDetails() {
                     Watch Sub
                   </Button>}
                   {tenshiEpisodeInfo && server == "tenshi" &&
-                 <Button href={`/v2/${Object.keys(malSyncData.Pages.Tenshi)[0]}/1`}>
+                 <Button href={`/v2/${Object.keys(malSyncData.Sites.Tenshi)[0]}/1`}>
+                 Watch Now
+               </Button>
+                  }
+                  {zoroEpisodeInfo && server == "zoro" &&
+                 <Button href={`/v3/${zoroEpisodeInfo.zoroAnimeId}/${zoroEpisodeInfo.firstEpisodeNum}`}>
                  Watch Now
                </Button>
                   }
@@ -285,7 +211,8 @@ function MalAnimeDetails() {
                    <div className="dropdown float-right dropdown-hover">
                    <label tabIndex={0} className="btn m-1">{server}</label>
                    <ul tabIndex={0} className="dropdown-content menu text-black  p-2 shadow bg-base-100 rounded-box w-52">
-                   {malSyncData.Pages.Tenshi ? (<li onClick={() => serverButtonHandler("tenshi")}><a>Tenshi</a></li>) : null} 
+                   {/* {malSyncData.Sites.Tenshi ? (<li onClick={() => serverButtonHandler("tenshi")}><a>Tenshi</a></li>) : null}  */}
+                   {malSyncData.Sites.Zoro ? (<li onClick={() => serverButtonHandler("zoro")}><a>Zoro</a></li>) : null} 
                      <li onClick={() => serverButtonHandler("gogoanime")}><a>Gogoanime</a></li>
                    </ul>
                  </div>
@@ -333,13 +260,32 @@ function MalAnimeDetails() {
                   <EpisodeLink
                   key={i+1}
                   className="flex justify-center items-center"
-                    href={`/v2/${Object.keys(malSyncData.Pages.Tenshi)[0]}/${parseInt(i) + 1}`}
+                    href={`/v2/${Object.keys(malSyncData.Sites.Tenshi)[0]}/${parseInt(i) + 1}`}
                   >
                     {console.log(tenshiEpisodeInfo.totalEp,i)}
                     <div className="hidden sm:block">
                     Episode 
                     </div>
                     &nbsp;{i + 1}
+                  </EpisodeLink>
+                ))
+                }
+             
+            </Episodes>
+             )}
+                  {  server == "zoro" && zoroEpisodeInfo && (
+              <Episodes>
+              {
+                zoroEpisodeInfo.episodes.map((item, index) => (
+                  <EpisodeLink
+                  key={item.epNum}
+                  className="flex justify-center items-center"
+                    href={`/v3/${zoroEpisodeInfo.zoroAnimeId}/${item.id}`}
+                  >
+                    <div className="hidden sm:block">
+                    Episode 
+                    </div>
+                    &nbsp;{item.epNum}
                   </EpisodeLink>
                 ))
                 }

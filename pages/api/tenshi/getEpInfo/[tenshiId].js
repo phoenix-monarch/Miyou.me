@@ -32,12 +32,12 @@ const scrapeAnimeDetails = async (id) => {
 export default async function handler(req, res) {
     const {tenshiId} = req.query
     let episodeInfo = {}
-
+   
     let AnimeInfo = await scrapeAnimeDetails(tenshiId)
-    episodeInfo.totalEp =AnimeInfo.totalEp
+   episodeInfo.totalEp =AnimeInfo.totalEp
    episodeInfo.status = AnimeInfo.status
-
-
   
-    res.send(episodeInfo)
+    
+   
+   res.send(episodeInfo)
 };
