@@ -43,7 +43,15 @@ const [dubAvailable,setDubAvailable] =useState(false)
       setThumbnailUrl(thumbnailUrl)
     }
   },[data])
-  
+  function epNumClickHandler(href){
+    if(typeof window!== "undefined"){
+      if(typeof window.hls !== "undefined" && typeof window.hls.destroy !== "undefined"){
+        window.hls.destroy();
+      }
+    }
+    router.push(href)
+
+  }
   function convertZoroAnimeIdToTitle(animeId){
     
 let parts = animeId.split("-");
@@ -187,8 +195,8 @@ result = result.split(" ")
                   <EpisodeLink
                   key={item.epNum}
                   className="flex justify-center items-center"
-                    href={`/v3/${epInfoData.zoroAnimeId}/${item.id}`}
-          
+                    // href={`/v3/${epInfoData.zoroAnimeId}/${item.id}`}
+                    onClick={() =>  epNumClickHandler(`/v3/${epInfoData.zoroAnimeId}/${item.id}`)}
                     style={
                       item.epNum <= parseInt(epInfoData.episodes.find((episode) => episode.id === epId).epNum)
                         ? { backgroundColor: "#7676ff" }
@@ -345,7 +353,7 @@ const Episodes = styled.div`
   }
 `;
 
-const EpisodeLink = styled(Link)`
+const EpisodeLink = styled.div`
   text-align: center;
   color: white;
   text-decoration: none;

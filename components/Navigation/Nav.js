@@ -89,6 +89,9 @@ const Button = styled.button`
 
 const Links = styled(Link)`
   color: white;
+  :hover {
+    color :grey;
+  }
   font-weight: 400;
   text-decoration: none;
   margin: 0rem 1.3rem 0 1.3rem;

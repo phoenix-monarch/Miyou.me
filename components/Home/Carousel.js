@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from "swiper";
 import { BsFillPlayFill } from "react-icons/bs";
 import { IconContext } from "react-icons";
-
+import { useRouter } from "next/router";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -13,7 +13,7 @@ import "swiper/css/scrollbar";
 import useWindowSize from "../../hooks/useWindowSize";
 function Carousel({ images }) {
   const {height, width   } = useWindowSize();
-
+const router = useRouter()
 
 
 
@@ -77,12 +77,15 @@ function Carousel({ images }) {
                             },
                           }}
                         >
-                          <button className="btn-primary btn" href={"id/" + item.idMal}>
+                          <Link className="btn-primary btn"
+                          // onClick={() =>  router.push(`id/${item.idMal}`)}
+                          href={"id/" + item.idMal}
+                          >
                             <BsFillPlayFill className="md:h-8 md:w-8" />
                             <div className="hidden md:block">
              Watch 
              </div>
-                          </button>
+                          </Link>
                         </IconContext.Provider>
                    
                       

@@ -41,11 +41,31 @@ function VideoPlayer({
   
   useEffect(() => {
     console.log(`Switched to ${dub}`);
+    setDub(dub)
+    if(typeof window !== "undefined"){
+      if(typeof window.hls !== "undefined" && typeof window.hls.destroy !== "undefined"){
+        window.hls.destroy()
+        console.log("destroyed")
+      }
+    }
   }, [dub]);
   const playerRef = useRef(null);
   useEffect(() => {
     console.log(previewThumbnails)
+    // let tracks= subtitles.map((e,i) => {
+    //   return {
+    //     kind: 'captions',
+    //     label: e.lang,
+    //     src:  "https://3000-reyangurjar-miyoume-7yhhgj1d4lw.ws-us83.gitpod.io/zorores/"+ e.url.slice(23) ,
+    //     default :
+    //     subtitles[i].lang == "English" ? 
+    //     true
+    //   :
+    //   false,
 
+    //   srclang: e.lang
+    // }
+    // })
     if (!localStorage.getItem("autoplay")) {
       localStorage.setItem("autoplay", false);
     } else {
@@ -93,20 +113,8 @@ function VideoPlayer({
         seekTime: 5,
         invertTime: false,
         fullscreen: { iosNative: true },
-        // preload: "auto",
-        // autoplay: true,
-        tracks: subtitles.map((i,e) => {
-          return {
-            kind: 'captions',
-            label: e.lang,
-            src: e.url,
-            default :
-            subtitles[i].lang == "English" ? 
-            true
-          :
-          false
-        }
-        })
+        preload: "auto",
+        
     };
 
     if (type === "mp4") {
@@ -123,9 +131,27 @@ function VideoPlayer({
     if(type === "hls"){
     if (Hls.isSupported()) {
       const hls = new Hls();
+
       hls.loadSource(src);
       hls.attachMedia(video);
-
+      if(subtitles.length !== 0){
+        const track = document.createElement('track');
+        let engSubtitle =subtitles.find(subtitle => subtitle.lang == "English")
+        video.appendChild(track);
+        Object.assign(track, {
+          label: 'English',
+          srclang: 'en',
+          default: true,
+          src:"/zorores/"+ engSubtitle.url.slice(23)
+        });
+        // tracks.map((e,i) => {
+        //   const track = document.createElement('track');
+        //   track.src = e.src;
+        //   track.label = e.label;
+        //   track.default =e.default;
+        //   video.appendChild(track);
+        // })
+      }
       hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
         const availableQualities = hls.levels.map((l) => l.height);
         availableQualities.unshift(0);
@@ -181,7 +207,6 @@ function VideoPlayer({
         });
 
         player.on("enterfullscreen", (event) => {
-          plyer.appendChild(button);
           window.screen.orientation.lock("landscape");
         });
 
@@ -322,18 +347,7 @@ function VideoPlayer({
   }
   // hls.destroy()
   }, [src]);
-  // useEffect(() => {
-  //   // Reset the state here
-  //   if (hasRendered) {
-  //     // Do something when the route changes
-  //     hls.stopLoad()
-  //     console.log(router.pathname);
-  //   } else {
-  //     setHasRendered(true);
-  //   }
-  //   setDub(false)
-  // }, [router.pathname])
-  
+
 
   return (
     <div
