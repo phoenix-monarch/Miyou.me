@@ -103,7 +103,7 @@ result = result.split(" ")
                 
                     <div>
                     <VideoPlayer
-                      sources={"https://cors.proxy.consumet.org/" + data.sources[data.sources.length - 1].url}
+                      sources={"https://cors.consumet.stream/" + data.sources[data.sources.length - 1].url}
                       // sources={"https://content.jwplatform.com/manifests/vM7nH0Kl.m3u8"}
                       type={"hls"}
                       previewThumbnails={data.subtitles.find((subtitle) => subtitle.lang === "Thumbnails").url}
