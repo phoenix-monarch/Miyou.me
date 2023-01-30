@@ -22,7 +22,7 @@ function MalAnimeDetails() {
 
   
   // const {data : malSyncData,error : malSyncDataError ,isLoading : malSyncDataLoading} = useSWR( router.isReady ? [`https://raw.githubusercontent.com/MALSync/MAL-Sync-Backup/master/data/myanimelist/anime/${id}.json`,`malSync${id}`] : null, ([url,cacheKey]) => cacheFetchRequest(url,cacheKey))
-  const {data : malSyncData,error : malSyncDataError} = useSWR(router.isReady ? `https://cors.proxy.consumet.org/https://api.malsync.moe/mal/anime/${id}`  : null)
+  const {data : malSyncData,error : malSyncDataError} = useSWR(router.isReady ? `https://cors.consumet.stream/https://api.malsync.moe/mal/anime/${id}`  : null)
   const {data : gogoEpisodeInfo ,error: gogoEpisodeInfoError,isLoading : gogoEpisodeInfoLoading} = useSWR(router.isReady && server == "gogoanime" ? `/api/gogoanime/getEpisodeInfo/${id}` : null )
   const {data : tenshiEpisodeInfo ,error: tenshiEpisodeInfoError,isLoading : tenshiEpisodeInfoLoading} = useSWR(router.isReady && server == "tenshi" && malSyncData !== undefined ? `/api/tenshi/getEpInfo/${Object.keys(malSyncData.Sites.Tenshi)[0]}` : null )
   const {data : zoroEpisodeInfo ,error: zoroEpisodeInfoError,isLoading : zoroEpisodeInfoLoading} = useSWR(router.isReady && server == "zoro" && malSyncData !== undefined ? `/api/zoro/getEpisodesInfo/${Object.keys(malSyncData.Sites.Zoro)[0]}` : null )
